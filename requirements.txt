@@ -5,3 +5,4 @@ python-dateutil==2.5.3
 feedparser==6.0.2
 wikipedia==1.4.0
 PyDictionary==2.0.1
+pyTelegramBotAPI==3.7.4
