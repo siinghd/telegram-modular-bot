@@ -133,7 +133,7 @@ def startMain():
                 stringtosend= stringtosend.replace("gmeme","generatememe")
 
                 stringtosend = stringtosend[:-1]
-                print(stringtosend)
+
                 if len(search) == 1:
                     bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/sendmessagebyid text1,text2 ")
                 else:
