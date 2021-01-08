@@ -127,12 +127,12 @@ def startMain():
             messageManager.callBackWikiHandler(call,bot)
 
     def subscriptionNextStep_Time(message):
-        if message.from_user.id == messageManager.userData[3]:
+        if message.from_user.id in messageManager.userstep:
             messageManager.send_subscriptionMessageTime(message,bot)
         else:
             bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
     def afkNextStep_Message(message):
-        if message.from_user.id == messageManager.userData[3]:
+        if message.from_user.id in messageManager.userstep:
             messageManager.setAfkMessage(message,bot)
         else:
             bot.register_next_step_handler_by_chat_id(message.chat.id, afkNextStep_Message)

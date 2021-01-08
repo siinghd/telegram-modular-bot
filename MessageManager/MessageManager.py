@@ -17,8 +17,8 @@ from PyDictionary import PyDictionary
 
 
 class MessageManager:
-    userstep = {}
-    userData = [None, None, None, None]
+    userstep = []
+    userData = [None, None, None]
     databaseOp = DatabaseOperation()
     databaseInitiaization = DatabaseInitiaization("telegramDb.db")
     conn = databaseInitiaization.getConnection()
@@ -211,19 +211,20 @@ class MessageManager:
     def send_subscriptionMessageCity(self, message, bot):
         self.userData[0] = message.chat.id
         markup = types.ForceReply(selective=True)
-        self.userData[3] = message.from_user.id
+        self.userstep.append(message.from_user.id)
         sent = bot.reply_to(message, "Please type Country name :", reply_markup=markup)
         self.userData[2] = sent.message_id
 
-    def getUserStep(self, messageId):
-        for x in self.userstep:
-            if x == messageId:
-                return 1
-
-        return 0
+    # def getUserStep(self, messageId):
+    #     for x in self.userstep:
+    #         if x == messageId:
+    #             return 1
+    #
+    #     return 0
 
     def callBackNewsHandler(self, data, bot):
-        if data.from_user.id == self.userData[3]:
+        if data.from_user.id in self.userstep:
+            self.userstep.remove(data.from_user.id)
             if "Cancel" in data.data:
                 bot.delete_message(self.userData[0], data.message.id)
             else:
@@ -259,7 +260,7 @@ class MessageManager:
                 time.sleep(60)
 
     def send_unSubscriptionNews(self, message, bot):
-        self.userData[3] = message.from_user.id
+        self.userstep.append(message.from_user.id)
         activeSubs = self.databaseOp.getNews_byGroupSubscriptions(self.cursor, message.chat.id)
         if len(activeSubs) == 0:
             bot.reply_to(message, "This chat has 0 subscriptions to cancel")
@@ -276,7 +277,8 @@ class MessageManager:
         bot.send_message(message.chat.id, "Cancel Subscription", reply_markup=markup)
 
     def callBackCancelNewsHandler(self, call, bot):
-        if call.from_user.id == self.userData[3]:
+        if call.from_user.id in self.userstep:
+            self.userstep.remove(call.from_user.id)
             if "Cancel" in call.data:
                 bot.delete_message(call.message.chat.id, call.message.id)
             else:
@@ -343,7 +345,7 @@ class MessageManager:
 
     def send_userAfkMessage(self, message, bot):
         markup = types.ForceReply(selective=True)
-        self.userData[3] = message.from_user.id
+        self.userstep.append(message.from_user.id)
         sent = bot.reply_to(message, "Please type Your AFK Message :", reply_markup=markup)
         self.userData[2] = sent.message_id
     def setAfkMessage(self, message, bot):
@@ -424,7 +426,7 @@ class MessageManager:
         return string
 
     def send_wikisearch(self, bot, message, search):
-        self.userData[3]=message.from_user.id
+        self.userstep.append(message.from_user.id)
         try:
             search_Result = wikipedia.search(search,results = 5, suggestion = True)
             markup = types.InlineKeyboardMarkup()
@@ -443,7 +445,8 @@ class MessageManager:
 
 
     def callBackWikiHandler(self, call, bot):
-        if call.from_user.id == self.userData[3]:
+        if call.from_user.id in self.userstep:
+            self.userstep.remove(call.from_user.id)
             if "Cancel" in call.data:
                 bot.delete_message(call.message.chat.id, call.message.id)
             else:
