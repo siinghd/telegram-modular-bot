@@ -9,6 +9,7 @@ from DatabaseManager.Group import Group
 from DatabaseManager.NewsSubscription import NewsSubscription
 from DatabaseManager.User import User
 from DatabaseManager.AfkStatus import AfkStatus
+from MemeManager.ImgFlip import ImgFlip
 import wikipedia
 from threading import Lock
 import csv
@@ -24,6 +25,7 @@ class MessageManager:
     conn = databaseInitiaization.getConnection()
     cursor = conn.cursor()
     lock = Lock()
+    imgFlip = ImgFlip()
     dictionary = PyDictionary()
     def __init__(self):
         self.cursor.execute("""
@@ -477,3 +479,12 @@ class MessageManager:
             bot.reply_to(message,msgToSend)
         except :
             bot.reply_to(message,f"Something went wrong retry!\nProbably there is no word {word} matching!")
+
+    def send_Meme(self, bot, message, param, param1):
+        images = self.imgFlip.getMeme("https://api.imgflip.com/get_memes")
+        image = random.choice(images)
+        resp = self.imgFlip.generateMeme(param,param1,image['id'])
+        if resp['success'] == False:
+            bot.reply_to(message,"Something went wrong retry!")
+        else:
+            bot.reply_to(message,resp['data']['url'])

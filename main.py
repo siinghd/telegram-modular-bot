@@ -14,7 +14,7 @@ def startMain():
     @bot.message_handler(commands=['start', 'help', 'currentnews', 'weather','time',
                                    'subscribenews','unsubscribenews' ,'listnewssubscriptions',
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
-                                   'wiki','meaning'])
+                                   'wiki','meaning','generatememe'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -26,10 +26,10 @@ def startMain():
                       "<b>Weather</b> - /weather City name\n"+\
                       "<b>Set Afk</b> - /setmeafk Set your status to AFK\n"+\
                       "<b>See if you have afk status</b> - /seemyafkstatus\n"+\
-                      "<b>Delete your afk status</b> - /deletemyafkstatus"+ \
-                      "<b>Info from wikipedia</b> - /wiki Word"+ \
-                      "<b>Find meaning</b> - /meaning Word"
-
+                      "<b>Delete your afk status</b> - /deletemyafkstatus\n"+ \
+                      "<b>Info from wikipedia</b> - /wiki Word\n"+ \
+                      "<b>Find meaning</b> - /meaning Word\n"+ \
+                      "<b>Generate meme (beta)</b> - /generatememe text1,text2\n"
             bot.reply_to(message, msgHelp)
         elif "/currentnews" in message.text.lower():
              country = message.text
@@ -99,6 +99,21 @@ def startMain():
             messageManager.send_afkStatus(message,bot)
         elif "/deletemyafkstatus" == message.text.lower() or "/deletemyafkstatus@szbrokenbot" == message.text.lower():
             messageManager.send_deleteMyAFK(message,bot)
+        elif "/generatememe" in message.text.lower() or "/generatememe@szbrokenbot" in message.text.lower():
+            stringtext = message.text
+            if "/generatememe@szBrokenBot" in stringtext:
+                stringtext = stringtext[stringtext.index("/generatememe@szBrokenBot") + len("/generatememe@szBrokenBot"):]
+            else:
+                stringtext = stringtext[stringtext.index("/generatememe") + len("/generatememe"):]
+
+            if len(stringtext) == 0:
+                bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/generatememe text1,text2 ")
+            else:
+                stringtexts = stringtext.split(",")
+                if len(stringtexts) == 1:
+                    bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/generatememe text1,text2 ")
+                else:
+                    messageManager.send_Meme(bot, message, stringtexts[0] , stringtexts[1])
 
 
 
@@ -130,11 +145,13 @@ def startMain():
         if message.from_user.id in messageManager.userstep:
             messageManager.send_subscriptionMessageTime(message,bot)
         else:
+            check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
     def afkNextStep_Message(message):
         if message.from_user.id in messageManager.userstep:
             messageManager.setAfkMessage(message,bot)
         else:
+            check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id, afkNextStep_Message)
 
 
