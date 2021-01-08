@@ -14,7 +14,7 @@ def startMain():
     @bot.message_handler(commands=['start', 'help', 'currentnews', 'weather','time',
                                    'subscribenews','unsubscribenews' ,'listnewssubscriptions',
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
-                                   'wiki','meaning','generatememe'])
+                                   'wiki','meaning','generatememe','sendmessagebyid'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -114,6 +114,30 @@ def startMain():
                     bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/generatememe text1,text2 ")
                 else:
                     messageManager.send_Meme(bot, message, stringtexts[0] , stringtexts[1])
+        elif "/sendmessagebyid" in message.text.lower() or "/sendmessagebyid@szbrokenbot" in message.text.lower():
+            search = message.text
+            if "/sendmessagebyid@szBrokenBot" in search:
+                search = search[search.index("/sendmessagebyid@szBrokenBot") + len("/sendmessagebyid@szBrokenBot"):]
+            else:
+                search = search[search.index("/sendmessagebyid") + len("/sendmessagebyid"):]
+            if len(search) == 0:
+                bot.reply_to(message, "Please type id \n/sendmessagebyid id")
+            else:
+                search = search.split(",")
+                i=0
+                stringtosend=""
+                for x in search:
+                    if i >0:
+                        stringtosend=stringtosend+x+","
+                    i=i+1
+                stringtosend= stringtosend.replace("gmeme","generatememe")
+
+                stringtosend = stringtosend[:-1]
+                print(stringtosend)
+                if len(search) == 1:
+                    bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/sendmessagebyid text1,text2 ")
+                else:
+                    messageManager.send_mssagetoGroup(bot, message, search[0] , stringtosend)
 
 
 
