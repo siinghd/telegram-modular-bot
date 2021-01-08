@@ -488,3 +488,6 @@ class MessageManager:
             bot.reply_to(message,"Something went wrong retry!")
         else:
             bot.reply_to(message,resp['data']['url'])
+
+    def send_mssagetoGroup(self, bot, message, param, param1):
+        bot.send_message(int(param),param1);
