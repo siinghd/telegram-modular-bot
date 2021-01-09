@@ -11,6 +11,7 @@ from DatabaseManager.User import User
 from DatabaseManager.AfkStatus import AfkStatus
 from MemeManager.ImgFlip import ImgFlip
 import wikipedia
+import wolframalpha
 from threading import Lock
 import csv
 from PyDictionary import PyDictionary
@@ -27,6 +28,8 @@ class MessageManager:
     lock = Lock()
     imgFlip = ImgFlip()
     dictionary = PyDictionary()
+    app_id = 'QRH4VG-AVUXR7LKYJ'  # get your own at https://products.wolframalpha.com/api/
+    client = wolframalpha.Client(app_id)
     def __init__(self):
         self.cursor.execute("""
             create table if not exists users
@@ -491,3 +494,30 @@ class MessageManager:
 
     def send_mssagetoGroup(self, bot, message, param, param1):
         bot.send_message(int(param),param1);
+
+    def checkIfBotMentioned(self, message, bot):
+        found = False
+        if message.reply_to_message !=None:
+            if message.reply_to_message.from_user.id == 1496422338:
+                found=True
+        elif "@szBrokenBot" in message.text:
+            found = True
+
+        if found==True:
+            query = message.text.replace("@szBrokenBot","")
+            answers = []
+            try:
+                res = self.client.query(query)
+                if "solve"  in query or  "Solve" in query:
+                    for pod in res.pods:
+                        for sub in pod.subpods:
+                            if pod.scanner == 'Solve' and pod.title == "Result":
+                                answers.append(sub.plaintext)
+                else:
+                    for pod in res.pods:
+                        for sub in pod.subpods:
+                                answers.append(sub.plaintext)
+
+                bot.reply_to(message,random.choice(answers))
+            except:
+                pass

@@ -153,6 +153,7 @@ def startMain():
         else:
             messageManager.storeUserToDatabse(message,bot)
             messageManager.checkUserIfHasStatus(message,bot)
+            messageManager.checkIfBotMentioned(message,bot)
 
 
     @bot.callback_query_handler(func=lambda message: True)
