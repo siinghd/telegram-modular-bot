@@ -508,10 +508,10 @@ class MessageManager:
             answers = []
             try:
                 res = self.client.query(query)
-                if "solve"  in query or  "Solve" in query:
+                if "solve" in query or  "Solve" in query:
                     for pod in res.pods:
                         for sub in pod.subpods:
-                            if pod.scanner == 'Solve' and pod.title == "Result":
+                            if pod.scanner == 'Solve' and (pod.title == "Result" or pod.title == "Results" ):
                                 answers.append(sub.plaintext)
                 else:
                     for pod in res.pods:
