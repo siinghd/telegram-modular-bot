@@ -505,19 +505,21 @@ class MessageManager:
 
         if found==True:
             query = message.text.replace("@szBrokenBot","")
-            answers = []
+            msgtoSend="<b>Info</b>\n"
             try:
                 res = self.client.query(query)
-                if "solve" in query or  "Solve" in query:
-                    for pod in res.pods:
-                        for sub in pod.subpods:
-                            if pod.scanner == 'Solve' and (pod.title == "Result" or pod.title == "Results" ):
-                                answers.append(sub.plaintext)
-                else:
-                    for pod in res.pods:
-                        for sub in pod.subpods:
-                                answers.append(sub.plaintext)
+                if res.success =="true":
+                    if "solve" in query or  "Solve" in query:
+                        for pod in res.pods:
+                            for sub in pod.subpods:
+                                msgtoSend=msgtoSend+f"<b>{pod.title}</b>\n\n{sub.plaintext}\n"
+                    else:
+                        for pod in res.pods:
+                            for sub in pod.subpods:
+                                    msgtoSend=msgtoSend+f"<b>{pod.title}</b>\n\n{sub.plaintext}\n"
 
-                bot.reply_to(message,random.choice(answers))
+                    bot.reply_to(message,msgtoSend)
+                else:
+                    bot.reply_to(message, "Ops something went wrong , don't ask me advanced questions! I'm in early stage :(")
             except:
-                pass
+                 pass
