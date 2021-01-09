@@ -520,6 +520,7 @@ class MessageManager:
 
                     bot.reply_to(message,msgtoSend)
                 else:
-                    bot.reply_to(message, "Ops something went wrong , don't ask me advanced questions! I'm in early stage :(")
+                    pass
+                    # bot.reply_to(message, "Ops something went wrong , don't ask me advanced questions! I'm in early stage :(")
             except:
                  pass

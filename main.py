@@ -156,6 +156,11 @@ def startMain():
             messageManager.checkIfBotMentioned(message,bot)
 
 
+    # Handles all sent documents and audio files
+    @bot.message_handler(content_types=['audio'])
+    def handle_docs_audio(message):
+        pass
+
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):
         if "Select time" == call.message.text:
