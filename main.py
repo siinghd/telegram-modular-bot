@@ -31,7 +31,7 @@ def startMain():
                       "<b>Info from wikipedia</b> - /wiki Word\n"+ \
                       "<b>Find meaning</b> - /meaning Word\n"+ \
                       "<b>Generate meme (beta)</b> - /generatememe text1,text2\n"+ \
-                      "<b>Audio to text</b> - /totext Reply to voice message\n"
+                      "<b>Audio to text (beta)</b> - /totext Reply to voice message\n"
             bot.reply_to(message, msgHelp)
         elif "/currentnews" in message.text.lower():
              country = message.text
