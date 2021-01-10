@@ -14,7 +14,8 @@ def startMain():
     @bot.message_handler(commands=['start', 'help', 'currentnews', 'weather','time',
                                    'subscribenews','unsubscribenews' ,'listnewssubscriptions',
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
-                                   'wiki','meaning','generatememe','sendmessagebyid'])
+                                   'wiki','meaning','generatememe','sendmessagebyid',
+                                   'totext'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -137,6 +138,8 @@ def startMain():
                     bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/sendmessagebyid text1,text2 ")
                 else:
                     messageManager.send_mssagetoGroup(bot, message, search[0] , stringtosend)
+        elif "/totext" == message.text.lower() or "/totexts@szbrokenbot" == message.text.lower():
+            messageManager.send_toText(message, bot)
 
 
 

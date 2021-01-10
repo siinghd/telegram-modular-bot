@@ -15,9 +15,10 @@ import wolframalpha
 from threading import Lock
 import csv
 from PyDictionary import PyDictionary
-
-
-
+import speech_recognition as sr
+import os
+import soundfile as sf
+from pydub import AudioSegment
 class MessageManager:
     userstep = []
     userData = [None, None, None]
@@ -30,6 +31,8 @@ class MessageManager:
     dictionary = PyDictionary()
     app_id = 'QRH4VG-AVUXR7LKYJ'  # get your own at https://products.wolframalpha.com/api/
     client = wolframalpha.Client(app_id)
+    r = sr.Recognizer()
+
     def __init__(self):
         self.cursor.execute("""
             create table if not exists users
@@ -524,3 +527,43 @@ class MessageManager:
                     # bot.reply_to(message, "Ops something went wrong , don't ask me advanced questions! I'm in early stage :(")
             except:
                  pass
+
+
+    def send_toText(self, message, bot):
+
+        if message.reply_to_message==None or message.reply_to_message.voice==None:
+            bot.reply_to(message,"Please include a reply voice replt!")
+        else:
+            # try:
+                file_info = bot.get_file(message.reply_to_message.voice.file_id)
+                downloaded_file = bot.download_file(file_info.file_path)
+                nameF=file_info.file_unique_id
+                nameFogg=nameF+".ogg"
+                with open(nameFogg, 'wb') as new_file:
+                    new_file.write(downloaded_file)
+                file_ogg = AudioSegment.from_ogg(nameFogg)
+                filewav = nameF+".wav"
+                file_handle = file_ogg.export(filewav, format="wav")
+                nameFwav = nameF + ".wav"
+                audio = sr.AudioFile(nameFwav)
+                with audio as source:
+                    self.r.adjust_for_ambient_noise(source, duration=0.5)
+                    audio = self.r.record(source)
+                    res = self.r.recognize_google(audio, language="en-IN",show_all=True)
+
+                stringTosend="<b>Here are possible options:</b>\n"
+
+                for transcripit in res['alternative']:
+                    stringTosend= stringTosend+f"""⚫ {transcripit['transcript']}\n"""
+
+                print(stringTosend)
+                bot.send_message(message.chat.id,stringTosend)
+                if os.path.exists(nameFwav):
+                    os.remove(nameFwav)
+                if os.path.exists(nameFogg):
+                    os.remove(nameFogg)
+
+            # except:
+                bot.send_message(message.chat.id, "Problem in convertion!")
+
+
