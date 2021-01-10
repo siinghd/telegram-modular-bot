@@ -1,3 +1,8 @@
 venv
 .idea
+<<<<<<< HEAD
 telegramDb.db
+=======
+telegramDb.db
+
+>>>>>>> 50882d5cd4d266791b440b2359e7b56f088b7759
