@@ -534,7 +534,7 @@ class MessageManager:
         if message.reply_to_message==None or message.reply_to_message.voice==None:
             bot.reply_to(message,"Please include a reply voice replt!")
         else:
-            # try:
+            try:
                 file_info = bot.get_file(message.reply_to_message.voice.file_id)
                 downloaded_file = bot.download_file(file_info.file_path)
                 nameF=file_info.file_unique_id
@@ -556,14 +556,13 @@ class MessageManager:
                 for transcripit in res['alternative']:
                     stringTosend= stringTosend+f"""⚫ {transcripit['transcript']}\n"""
 
-                print(stringTosend)
                 bot.send_message(message.chat.id,stringTosend)
                 if os.path.exists(nameFwav):
                     os.remove(nameFwav)
                 if os.path.exists(nameFogg):
                     os.remove(nameFogg)
 
-            # except:
+            except:
                 bot.send_message(message.chat.id, "Problem in convertion!")
 
 
