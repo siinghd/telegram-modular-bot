@@ -23,7 +23,7 @@ class MessageManager:
     userstep = []
     userData = [None, None, None]
     databaseOp = DatabaseOperation()
-    databaseInitiaization = DatabaseInitiaization("telegramDb.db")
+    databaseInitiaization = DatabaseInitiaization("d53u103lovkkna","vxoxttfardbovf","aedd150942e9b21c9ae78bdd01140c6148a72839060ce4bab047ee46012e0e4f","ec2-52-205-145-201.compute-1.amazonaws.com")
     conn = databaseInitiaization.getConnection()
     cursor = conn.cursor()
     lock = Lock()
@@ -151,7 +151,7 @@ class MessageManager:
         parsedString = message.text.split(" ")
         metionarray = []
         stringMessage = random.choice(array)
-        i = 0;
+        i = 0
         try:
             for stringM in parsedString:
                 if "@" in stringM:
@@ -323,10 +323,10 @@ class MessageManager:
         user = User(message.from_user.id,bot,message.from_user.first_name
                     ,username,lastname)
         try:
-            self.lock.acquire(True)
+            # self.lock.acquire(True)
             self.databaseOp.insertUser(user,self.cursor)
             self.conn.commit()
-            self.lock.release()
+            # self.lock.release()
         except:
             pass
 
@@ -373,7 +373,8 @@ class MessageManager:
             bot.reply_to(message,"You don't have any status set!")
         else:
             for x in array:
-                dt_object = datetime.fromtimestamp(x._created_At)
+                dt_object = datetime.fromisoformat(str(x._created_At))
+                dt_object = dt_object.strftime("%m/%d/%Y, %H:%M")
                 msgSend = "<b>On : {date}</b>\nYour message:\n".format(date=dt_object)+\
                           "<code>{message}</code>".format(message=x._message)
                 bot.reply_to(message,msgSend)
@@ -404,28 +405,29 @@ class MessageManager:
             arrayOfMentionsId.append(message.reply_to_message.from_user.id)
         messageTosend=""
         for mention in arrayOfMentionsId:
-            self.lock.acquire(True)
+            # self.lock.acquire(True)
             array = self.databaseOp.getUserStatusByID(mention,self.cursor)
             messageTosend=self.addMessageToTheStringStatus(array,messageTosend)
-            self.lock.release()
+            # self.lock.release()
         for tagged in metionarray:
             username= tagged[tagged.index("@")+len("@"):]
-            self.lock.acquire(True)
+            # self.lock.acquire(True)
             arrayofid = self.databaseOp.getUserByUsername(username,self.cursor)
-            self.lock.release()
+            # self.lock.release()
             if len(arrayofid)!=0:
-                self.lock.acquire(True)
+                # self.lock.acquire(True)
                 arrayOfafkstatus = self.databaseOp.getUserStatusByID(arrayofid[0], self.cursor)
-                self.lock.release()
+                # self.lock.release()
                 messageTosend = self.addMessageToTheStringStatus(arrayOfafkstatus, messageTosend)
 
         if len(messageTosend)!=0:
             bot.reply_to(message,messageTosend)
 
     def addMessageToTheStringStatus(self,array,string):
+
         if len(array) != 0:
-            date_time = datetime.fromtimestamp(array[0]._created_At)
-            d = date_time.strftime("%m/%d/%Y, %H:%M")
+            dt_object = datetime.fromisoformat(str(array[0]._created_At))
+            d = dt_object.strftime("%m/%d/%Y, %H:%M")
             string = string + "<b>User </b>: <a href='tg://user?id={id}'>{name}</a> is AFK!\n".format(
                 id=array[0]._id,
                 name=array[0]._firstName) + \
@@ -551,12 +553,13 @@ class MessageManager:
                     audio = self.r.record(source)
                     res = self.r.recognize_google(audio, language="en-IN",show_all=True)
 
-                stringTosend="<b>Here are possible options:</b>\n"
+                if len(res) ==0:
+                    bot.send_message(message.chat.id, "Check the audio, probably no clear speech found!")
+                else:
+                    stringTosend="<b>Here are possible text:</b>\n"
 
-                for transcripit in res['alternative']:
-                    stringTosend= stringTosend+f"""⚫ {transcripit['transcript']}\n"""
-
-                bot.send_message(message.chat.id,stringTosend)
+                    stringTosend= stringTosend+f"""⚫ {res['alternative'][0]['transcript']}\n"""
+                    bot.send_message(message.chat.id,stringTosend)
                 if os.path.exists(nameFwav):
                     os.remove(nameFwav)
                 if os.path.exists(nameFogg):

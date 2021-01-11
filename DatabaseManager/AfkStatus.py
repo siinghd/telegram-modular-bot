@@ -1,5 +1,4 @@
-import calendar
-import time
+import datetime
 class AfkStatus:
     def __init__(self,id,message,firstname,createdAt):
         self._id = id
@@ -11,4 +10,4 @@ class AfkStatus:
             self._created_At = createdAt
 
     def getTimeStamp(self):
-        return calendar.timegm(time.gmtime())
+        return datetime.datetime.now()

@@ -9,8 +9,7 @@ class DatabaseOperation:
             cursor.execute("""Select group_id from groups where group_id={id}""".format(id=group._id))
             item = cursor.fetchall();
             if len(item)==0:
-                cursor.execute("INSERT INTO groups VALUES (:group_id,:name,:created_At)",
-                          {"group_id":group._id,"name":group._name,"created_At":group._timestamp})
+                cursor.execute(f"INSERT INTO groups VALUES ({group._id},{group._name},{group._timestamp})")
 
             return "ok"
         except Exception:
@@ -20,8 +19,7 @@ class DatabaseOperation:
                 cursor.execute("""Select * from news_subscriptions where groupId={id} AND state='{state_}'""".format(id=news_subscription._groupId,state_=news_subscription._state))
                 item = cursor.fetchall();
                 if len(item)==0:
-                    cursor.execute("INSERT INTO news_subscriptions VALUES (:id,:state,:time,:groupId,:subscription)",
-                                  {"id":news_subscription._id,"state": news_subscription._state,"time": news_subscription._time, "groupId":  news_subscription._groupId,"subscription": news_subscription._subscription})
+                    cursor.execute(f"INSERT INTO news_subscriptions VALUES ({news_subscription._id},{news_subscription._state},{news_subscription._time},{news_subscription._groupId},{news_subscription._subscription})")
                     return "Subscription successfull!"
                 else:
                     return self.update_subscription(item[0][0],news_subscription,1,cursor)
@@ -34,9 +32,7 @@ class DatabaseOperation:
             item = cursor.fetchall();
 
             if len(item)==0:
-                cursor.execute("INSERT INTO users VALUES (:id,:is_bot,:first_name,:username,:last_name,:created_At)",
-                          {"id":user._id,"is_bot":user._is_bot,"created_At":user._created_At,"first_name":user._first_name,
-                           "username":user._username,"last_name":user._last_name})
+                cursor.execute(f"INSERT INTO users VALUES ({user._id},{user._is_bot},{user._first_name},{user._username},{user._last_name},{user._created_At})")
             elif item[0][1]!=user._username:
                 cursor.execute("""UPDATE users  SET username='{name}'
                                                     WHERE id={id}""".format(name=user._username,
@@ -50,10 +46,9 @@ class DatabaseOperation:
             cursor.execute("""Select userId from afkstatus where userId={id}""".format(id=statusInfo._id))
             item = cursor.fetchall()
             if len(item)==0:
-                cursor.execute("INSERT INTO afkstatus VALUES (:id,:message,:created_At)",
-                          {"id":statusInfo._id,"message":statusInfo._message,"created_At":statusInfo._created_At})
+                cursor.execute(f"INSERT INTO afkstatus VALUES ({statusInfo._id},'{statusInfo._message}','{statusInfo._created_At}')")
             else:
-                cursor.execute("UPDATE afkstatus SET message= '{messh}' where userId={user_}".format(user_=statusInfo._id,messh=statusInfo._message))
+                cursor.execute(f"UPDATE afkstatus SET message= '{statusInfo._message}' where userId={statusInfo._id}")
 
             return "ok"
         except Exception:
@@ -98,7 +93,7 @@ class DatabaseOperation:
         except Exception:
             return "Something went wrong retry!"
     def getUserStatusByID(self, id , cursor):
-        try:
+        # try:
             cursor.execute("""Select userId, message,afkstatus.created_At, first_name  from afkstatus 
             JOIN users ON userId = id
             WHERE userId={id}""".format(id=id))
@@ -109,11 +104,11 @@ class DatabaseOperation:
                 arrayI.append(x)
 
             return arrayI
-        except Exception:
-            return "Something went wrong retry!"
+        # except Exception:
+        #     return "Something went wrong retry!"
 
     def getUserByUsername(self, userName, cursor):
-        try:
+        # try:
             cursor.execute("""Select id from users WHERE username='{username}'""".format(username=userName))
             items = cursor.fetchall()
             arrayI = []
@@ -121,8 +116,8 @@ class DatabaseOperation:
                 arrayI.append(i[0])
 
             return arrayI
-        except Exception:
-            return "Something went wrong retry!"
+        # except Exception:
+        #     return "Something went wrong retry!"
     def getNews_byGroupSubscriptions(self, cursor,groupId):
         try:
             cursor.execute("""Select id,state,time,groupId,subscription from news_subscriptions

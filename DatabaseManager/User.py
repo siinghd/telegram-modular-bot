@@ -1,5 +1,4 @@
-import calendar
-import time
+import datetime
 class User:
     def __init__(self,id,is_bot,first_name,username,last_name):
         self._id = id
@@ -10,4 +9,4 @@ class User:
         self._created_At = self.getTimeStamp()
 
     def getTimeStamp(self):
-        return calendar.timegm(time.gmtime())
+        return datetime.datetime.now()

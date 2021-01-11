@@ -1,5 +1,4 @@
-import calendar
-import time
+import datetime
 
 
 class Group:
@@ -9,6 +8,6 @@ class Group:
         self._timestamp = self.getTimeStamp()
 
     def getTimeStamp(self):
-        return calendar.timegm(time.gmtime())
+        return datetime.datetime.now()
 
 

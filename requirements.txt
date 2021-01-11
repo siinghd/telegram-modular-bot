@@ -11,4 +11,5 @@ wolframalpha==4.1.1
 SpeechRecognition==3.8.1
 SoundFile==0.10.3.post1
 pydub==0.24.1
+psycopg2-binary==2.8.6
 

@@ -139,7 +139,7 @@ def startMain():
                     bot.reply_to(message, "Please type text1 and text2 seperated by ,\n/sendmessagebyid text1,text2 ")
                 else:
                     messageManager.send_mssagetoGroup(bot, message, search[0] , stringtosend)
-        elif "/totext" == message.text.lower() or "/totexts@szbrokenbot" == message.text.lower():
+        elif "/totext" == message.text.lower() or "/totext@szbrokenbot" == message.text.lower():
             messageManager.send_toText(message, bot)
 
 
