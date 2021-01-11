@@ -9,7 +9,7 @@ class DatabaseOperation:
             cursor.execute("""Select group_id from groups where group_id={id}""".format(id=group._id))
             item = cursor.fetchall();
             if len(item)==0:
-                cursor.execute(f"INSERT INTO groups VALUES ({group._id},{group._name},{group._timestamp})")
+                cursor.execute(f"INSERT INTO groups VALUES ({group._id},'{group._name}','{group._timestamp}')")
 
             return "ok"
         except Exception:
@@ -19,7 +19,7 @@ class DatabaseOperation:
                 cursor.execute("""Select * from news_subscriptions where groupId={id} AND state='{state_}'""".format(id=news_subscription._groupId,state_=news_subscription._state))
                 item = cursor.fetchall();
                 if len(item)==0:
-                    cursor.execute(f"INSERT INTO news_subscriptions VALUES ({news_subscription._id},{news_subscription._state},{news_subscription._time},{news_subscription._groupId},{news_subscription._subscription})")
+                    cursor.execute(f"INSERT INTO news_subscriptions VALUES ({news_subscription._id},'{news_subscription._state}','{news_subscription._time}',{news_subscription._groupId},{news_subscription._subscription})")
                     return "Subscription successfull!"
                 else:
                     return self.update_subscription(item[0][0],news_subscription,1,cursor)
@@ -32,7 +32,7 @@ class DatabaseOperation:
             item = cursor.fetchall();
 
             if len(item)==0:
-                cursor.execute(f"INSERT INTO users VALUES ({user._id},{user._is_bot},{user._first_name},{user._username},{user._last_name},{user._created_At})")
+                cursor.execute(f"INSERT INTO users VALUES ({user._id},'{user._is_bot}','{user._first_name}','{user._username}','{user._last_name}','{user._created_At}')")
             elif item[0][1]!=user._username:
                 cursor.execute("""UPDATE users  SET username='{name}'
                                                     WHERE id={id}""".format(name=user._username,
