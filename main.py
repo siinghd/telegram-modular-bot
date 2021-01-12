@@ -15,7 +15,7 @@ def startMain():
                                    'subscribenews','unsubscribenews' ,'listnewssubscriptions',
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
-                                   'totext'])
+                                   'totext','tospeech'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -31,7 +31,8 @@ def startMain():
                       "<b>Info from wikipedia</b> - /wiki Word\n"+ \
                       "<b>Find meaning</b> - /meaning Word\n"+ \
                       "<b>Generate meme (beta)</b> - /generatememe text1,text2\n"+ \
-                      "<b>Audio to text (beta)</b> - /totext Reply to voice message\n"
+                      "<b>Audio to text (beta)</b> - /totext Reply to voice message\n"+\
+                      "<b>Text to audio (beta)</b> - /tospeech Reply to text message\n"
             bot.reply_to(message, msgHelp)
         elif "/currentnews" in message.text.lower():
              country = message.text
@@ -141,6 +142,16 @@ def startMain():
                     messageManager.send_mssagetoGroup(bot, message, search[0] , stringtosend)
         elif "/totext" == message.text.lower() or "/totext@szbrokenbot" == message.text.lower():
             messageManager.send_toText(message, bot)
+        elif "/tospeech" in message.text.lower():
+            language = message.text
+            if "/tospeech@szBrokenBot" in language:
+                language = language[language.index("/tospeech@szBrokenBot") + len("/tospeech@szBrokenBot"):]
+            else:
+                language = language[language.index("/tospeech") + len("/tospeech"):]
+            if len(language) == 0:
+                bot.reply_to(message, "Please type the language\n/tospeech language")
+            else:
+                messageManager.send_toSpeech( message, bot, language)
 
 
 

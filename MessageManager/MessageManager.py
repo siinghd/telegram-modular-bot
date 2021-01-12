@@ -17,6 +17,7 @@ import csv
 from PyDictionary import PyDictionary
 import speech_recognition as sr
 import os
+from gtts import gTTS
 import soundfile as sf
 from pydub import AudioSegment
 class MessageManager:
@@ -424,7 +425,6 @@ class MessageManager:
             bot.reply_to(message,messageTosend)
 
     def addMessageToTheStringStatus(self,array,string):
-
         if len(array) != 0:
             dt_object = datetime.fromisoformat(str(array[0]._created_At))
             d = dt_object.strftime("%m/%d/%Y, %H:%M")
@@ -534,7 +534,7 @@ class MessageManager:
     def send_toText(self, message, bot):
 
         if message.reply_to_message==None or message.reply_to_message.voice==None:
-            bot.reply_to(message,"Please include a reply voice replt!")
+            bot.reply_to(message,"Please include a reply voice reply!")
         else:
             try:
                 file_info = bot.get_file(message.reply_to_message.voice.file_id)
@@ -567,5 +567,35 @@ class MessageManager:
 
             except:
                 bot.send_message(message.chat.id, "Problem in convertion!")
+
+    def send_toSpeech(self, message, bot,lang):
+        if message.reply_to_message==None or message.reply_to_message.text==None:
+            bot.reply_to(message,"Please include a reply voice reply!")
+        else:
+            try:
+                # Language in which you want to convert
+                lang=lang.strip()
+                language = lang[0:2]
+                stringid= message.reply_to_message.message_id
+                string_mp=str(stringid)+ ".ogg"
+                # Passing the text and language to the engine,
+                # here we have marked slow=False. Which tells
+                # the module that the converted audio should
+                # have a high speed
+                myobj = gTTS(text=message.reply_to_message.text, lang=language, slow=False)
+                # string_ogg = str(stringid)+".ogg"
+                # Saving the converted audio in a mp3 file named
+                # welcome
+                myobj.save(string_mp)
+                # file_mp = AudioSegment.from_mp3(string_mp)
+                # file_handle = file_mp.export(string_ogg, format="ogg")
+                # sendVoice
+                voice = open(string_mp, 'rb')
+                bot.send_voice(message.chat.id, voice)
+                if os.path.exists(string_mp):
+                    os.remove(string_mp)
+
+            except:
+                bot.send_message(message.chat.id, "Problem in convertion, probably problem with language you insert!")
 
 
