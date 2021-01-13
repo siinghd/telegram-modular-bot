@@ -324,10 +324,10 @@ class MessageManager:
         user = User(message.from_user.id,bot,message.from_user.first_name
                     ,username,lastname)
         try:
-            # self.lock.acquire(True)
+            self.lock.acquire(True)
             self.databaseOp.insertUser(user,self.cursor)
             self.conn.commit()
-            # self.lock.release()
+            self.lock.release()
         except:
             pass
 
@@ -406,19 +406,19 @@ class MessageManager:
             arrayOfMentionsId.append(message.reply_to_message.from_user.id)
         messageTosend=""
         for mention in arrayOfMentionsId:
-            # self.lock.acquire(True)
+            self.lock.acquire(True)
             array = self.databaseOp.getUserStatusByID(mention,self.cursor)
             messageTosend=self.addMessageToTheStringStatus(array,messageTosend)
-            # self.lock.release()
+            self.lock.release()
         for tagged in metionarray:
             username= tagged[tagged.index("@")+len("@"):]
-            # self.lock.acquire(True)
+            self.lock.acquire(True)
             arrayofid = self.databaseOp.getUserByUsername(username,self.cursor)
-            # self.lock.release()
+            self.lock.release()
             if len(arrayofid)!=0:
-                # self.lock.acquire(True)
+                self.lock.acquire(True)
                 arrayOfafkstatus = self.databaseOp.getUserStatusByID(arrayofid[0], self.cursor)
-                # self.lock.release()
+                self.lock.release()
                 messageTosend = self.addMessageToTheStringStatus(arrayOfafkstatus, messageTosend)
 
         if len(messageTosend)!=0:
