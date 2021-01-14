@@ -261,11 +261,11 @@ class MessageManager:
                 else:
                     current_time = now.strftime("%I:%M") + "AM"
                 items = self.databaseOp.getNews_Subscriptions(self.cursor)
-
-                for item in items:
-                    if current_time == item._time:
-                        self.send_news(fr, bot, None, item._groupId, item._state)
-                        time.sleep(15)
+                if not isinstance(items, str):
+                    for item in items:
+                        if current_time == item._time:
+                            self.send_news(fr, bot, None, item._groupId, item._state)
+                            time.sleep(15)
 
                 time.sleep(60)
 
@@ -325,10 +325,10 @@ class MessageManager:
         user = User(message.from_user.id,bot,message.from_user.first_name
                     ,username,lastname)
         try:
-            self.lock.acquire(True)
+            # self.lock.acquire(True)
             self.databaseOp.insertUser(user,self.cursor)
             self.conn.commit()
-            self.lock.release()
+            # self.lock.release()
         except:
             pass
 
@@ -374,6 +374,7 @@ class MessageManager:
         if len(array)==0:
             bot.reply_to(message,"You don't have any status set!")
         else:
+
             for x in array:
                 dt_object = datetime.fromisoformat(str(x._created_At))
                 dt_object = dt_object.strftime("%m/%d/%Y, %H:%M")
@@ -407,34 +408,35 @@ class MessageManager:
             arrayOfMentionsId.append(message.reply_to_message.from_user.id)
         messageTosend=""
         for mention in arrayOfMentionsId:
-            self.lock.acquire(True)
+            # self.lock.acquire(True)
             array = self.databaseOp.getUserStatusByID(mention,self.cursor)
             messageTosend=self.addMessageToTheStringStatus(array,messageTosend)
-            self.lock.release()
+            # self.lock.release()
         for tagged in metionarray:
             username= tagged[tagged.index("@")+len("@"):]
-            self.lock.acquire(True)
+            # self.lock.acquire(True)
             arrayofid = self.databaseOp.getUserByUsername(username,self.cursor)
-            self.lock.release()
+            # self.lock.release()
             if len(arrayofid)!=0:
-                self.lock.acquire(True)
+                # self.lock.acquire(True)
                 arrayOfafkstatus = self.databaseOp.getUserStatusByID(arrayofid[0], self.cursor)
-                self.lock.release()
+                # self.lock.release()
                 messageTosend = self.addMessageToTheStringStatus(arrayOfafkstatus, messageTosend)
 
         if len(messageTosend)!=0:
             bot.reply_to(message,messageTosend)
 
     def addMessageToTheStringStatus(self,array,string):
-        if len(array) != 0:
-            dt_object = datetime.fromisoformat(str(array[0]._created_At))
-            d = dt_object.strftime("%m/%d/%Y, %H:%M")
-            string = string + "<b>User </b>: <a href='tg://user?id={id}'>{name}</a> is AFK!\n".format(
-                id=array[0]._id,
-                name=array[0]._firstName) + \
-                            "<b>Message from him/her</b> :<code> {message}</code>\n".format(message=array[0]._message)+\
-                    "<b>At </b>: {time}\n------------------\n".format(time=d)
-        return string
+        if not isinstance(array, str):
+            if len(array) != 0:
+                dt_object = datetime.fromisoformat(str(array[0]._created_At))
+                d = dt_object.strftime("%m/%d/%Y, %H:%M")
+                string = string + "<b>User </b>: <a href='tg://user?id={id}'>{name}</a> is AFK!\n".format(
+                    id=array[0]._id,
+                    name=array[0]._firstName) + \
+                                "<b>Message from him/her</b> :<code> {message}</code>\n".format(message=array[0]._message)+\
+                        "<b>At </b>: {time}\n------------------\n".format(time=d)
+            return string
 
     def send_wikisearch(self, bot, message, search):
         self.userstep.append(message.from_user.id)
@@ -616,7 +618,16 @@ class MessageManager:
             bot.reply_to(message,"Message sent isn't a photo , cancelling photo modfication command!")
             self.userstep.remove(message.from_user.id)
         else:
-            url=bot.get_file_url(message.photo[2].file_id)
+            if len(message.photo)==1:
+                url=bot.get_file_url(message.photo[0].file_id)
+            elif len(message.photo)==2:
+                url=bot.get_file_url(message.photo[1].file_id)
+            elif len(message.photo)==3:
+                url=bot.get_file_url(message.photo[2].file_id)
+            elif len(message.photo)==4:
+                url=bot.get_file_url(message.photo[3].file_id)
+            elif len(message.photo)==5:
+                url=bot.get_file_url(message.photo[4].file_id)
             r = requests.post(
                 "https://api.deepai.org/api/toonify",
                 data={
