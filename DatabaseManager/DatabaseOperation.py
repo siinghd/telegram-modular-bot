@@ -5,17 +5,17 @@ from DatabaseManager.AfkStatus import AfkStatus
 
 class DatabaseOperation:
     def insertGroup(self,group,cursor):
-        # try:
+        try:
             cursor.execute("""Select group_id from groups where group_id={id}""".format(id=group._id))
             item = cursor.fetchall();
             if len(item)==0:
                 cursor.execute(f"INSERT INTO groups VALUES ({group._id},'{group._name}','{group._timestamp}')")
 
             return "ok"
-        # except Exception:
-        #     return "Something went wrong retry!"
+        except Exception:
+            return "Something went wrong retry!"
     def insertnewSubscription(self, news_subscription, cursor):
-            # try:
+            try:
                 cursor.execute("""Select * from news_subscriptions where groupId={id} AND state='{state_}'""".format(id=news_subscription._groupId,state_=news_subscription._state))
                 item = cursor.fetchall();
                 if len(item)==0:
@@ -23,8 +23,8 @@ class DatabaseOperation:
                     return "Subscription successfull!"
                 else:
                     return self.update_subscription(item[0][0],news_subscription,1,cursor)
-            # except Exception:
-            #     return "Something went wrong retry!"
+            except Exception:
+                return "Something went wrong retry!"
     def insertUser(self,user,cursor):
         try:
 
@@ -93,7 +93,7 @@ class DatabaseOperation:
         except Exception:
             return "Something went wrong retry!"
     def getUserStatusByID(self, id , cursor):
-        # try:
+        try:
             cursor.execute("""Select userId, message,afkstatus.created_At, first_name  from afkstatus 
             JOIN users ON userId = id
             WHERE userId={id}""".format(id=id))
@@ -104,11 +104,11 @@ class DatabaseOperation:
                 arrayI.append(x)
 
             return arrayI
-        # except Exception:
-        #     return "Something went wrong retry!"
+        except Exception:
+            return "Something went wrong retry!"
 
     def getUserByUsername(self, userName, cursor):
-        # try:
+        try:
             cursor.execute("""Select id from users WHERE username='{username}'""".format(username=userName))
             items = cursor.fetchall()
             arrayI = []
@@ -116,8 +116,8 @@ class DatabaseOperation:
                 arrayI.append(i[0])
 
             return arrayI
-        # except Exception:
-        #     return "Something went wrong retry!"
+        except Exception:
+            return "Something went wrong retry!"
     def getNews_byGroupSubscriptions(self, cursor,groupId):
         try:
             cursor.execute("""Select id,state,time,groupId,subscription from news_subscriptions

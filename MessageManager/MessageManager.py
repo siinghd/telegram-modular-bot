@@ -556,7 +556,7 @@ class MessageManager:
                 if len(res) ==0:
                     bot.send_message(message.chat.id, "Check the audio, probably no clear speech found!")
                 else:
-                    stringTosend="<b>Here are possible text:</b>\n"
+                    stringTosend="<b>Here is possible text:</b>\n"
 
                     stringTosend= stringTosend+f"""⚫ {res['alternative'][0]['transcript']}\n"""
                     bot.send_message(message.chat.id,stringTosend)
