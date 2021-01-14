@@ -18,6 +18,7 @@ from PyDictionary import PyDictionary
 import speech_recognition as sr
 import os
 from gtts import gTTS
+import requests
 import soundfile as sf
 from pydub import AudioSegment
 class MessageManager:
@@ -597,5 +598,46 @@ class MessageManager:
 
             except:
                 bot.send_message(message.chat.id, "Problem in convertion, probably problem with language you insert!")
+
+    def getIsAdmin(self,bot,message):
+        isAdmin = False
+        for member in bot.get_chat_administrators(message.chat.id):
+            if member.user.id == message.from_user.id:
+                isAdmin = True
+                break
+        return isAdmin
+
+    def send_photoMsg(self, message, bot):
+        self.userstep.append(message.from_user.id)
+        bot.reply_to(message,"Please send me photo with visible face!")
+
+    def send_modified_photo(self,message,bot):
+        if message.content_type != 'photo':
+            bot.reply_to(message,"Message sent isn't a photo , cancelling photo modfication command!")
+            self.userstep.remove(message.from_user.id)
+        else:
+            url=bot.get_file_url(message.photo[2].file_id)
+            r = requests.post(
+                "https://api.deepai.org/api/toonify",
+                data={
+                    'image': url,
+                },
+                headers={'api-key': '282bb452-77d1-4561-a7d2-d750058fffd6'}
+            )
+            response = r.text
+            dictionary = json.loads(response)
+            if  'err' in dictionary:
+                bot.reply_to(message,f"An error occurred processing photo, please check your photo and make sure that it have visible face!")
+            else:
+                apiurl = dictionary['output_url']
+                saveImg= dictionary['id']+".jpg"
+                r = requests.get(apiurl, allow_redirects=True)
+                open(saveImg, 'wb').write(r.content)
+                photo = open(saveImg, 'rb')
+                bot.send_photo(message.chat.id,photo,"Here is your photo!",message.id)
+                photo.close()
+                if os.path.exists(saveImg):
+                    os.remove(saveImg)
+
 
 

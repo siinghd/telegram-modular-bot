@@ -68,7 +68,7 @@ class DatabaseOperation:
         except Exception:
             return "Something went wrong retry!"
     def getNews_Subscriptions(self, cursor):
-        try:
+        # try:
             cursor.execute("""Select id,state,time,groupId,subscription from news_subscriptions
                  JOIN groups ON news_subscriptions.groupId=groups.group_id WHERE subscription=1""")
             items = cursor.fetchall()
@@ -78,8 +78,8 @@ class DatabaseOperation:
                 arrayI.append(x)
 
             return arrayI
-        except Exception:
-            return "Something went wrong retry!"
+        # except Exception:
+        #     return "Something went wrong retry!"
     def getUserInfo(self, cursor):
         try:
             cursor.execute("""Select * from users""")

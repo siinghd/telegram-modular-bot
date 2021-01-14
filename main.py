@@ -15,7 +15,7 @@ def startMain():
                                    'subscribenews','unsubscribenews' ,'listnewssubscriptions',
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
-                                   'totext','tospeech'])
+                                   'totext','tospeech','chatinfo','modifyphoto'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -32,7 +32,8 @@ def startMain():
                       "<b>Find meaning</b> - /meaning Word\n"+ \
                       "<b>Generate meme (beta)</b> - /generatememe text1,text2\n"+ \
                       "<b>Audio to text (beta)</b> - /totext Reply to voice message\n"+\
-                      "<b>Text to audio (beta)</b> - /tospeech Reply to text message\n"
+                      "<b>Text to audio (beta)</b> - /tospeech Reply to text message\n"+ \
+                      "<b>Modify photo</b> - /modifyphoto Modify your photo to disney style\n"
             bot.reply_to(message, msgHelp)
         elif "/currentnews" in message.text.lower():
              country = message.text
@@ -88,8 +89,15 @@ def startMain():
             messageManager.sendUserInfoFile(message,bot)
 
         elif "/subscribenews" == message.text.lower() or "/subscribenews@szbrokenbot" == message.text.lower():
-            messageManager.send_subscriptionMessageCity(message,bot)
-            bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
+            if message.chat.type =="group":
+                if messageManager.getIsAdmin(bot,message):
+                    messageManager.send_subscriptionMessageCity(message, bot)
+                    bot.register_next_step_handler_by_chat_id(message.chat.id, subscriptionNextStep_Time)
+                else:
+                    bot.reply_to(message,"You are not admin in this group")
+            else:
+                messageManager.send_subscriptionMessageCity(message,bot)
+                bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
         elif "/unsubscribenews" == message.text.lower() or "/unsubscribenews@szbrokenbot" == message.text.lower():
             messageManager.send_unSubscriptionNews(message, bot)
 
@@ -152,6 +160,10 @@ def startMain():
                 bot.reply_to(message, "Please type the language\n/tospeech language")
             else:
                 messageManager.send_toSpeech( message, bot, language)
+        elif "/modifyphoto" == message.text.lower() or "/modifyphoto@szbrokenbot" == message.text.lower():
+            messageManager.send_photoMsg(message, bot)
+            bot.register_next_step_handler_by_chat_id(message.chat.id,photNextStepToonify)
+
 
 
 
@@ -173,6 +185,10 @@ def startMain():
 
     # Handles all sent documents and audio files
     @bot.message_handler(content_types=['audio'])
+    def handle_docs_audio(message):
+        pass
+    # Handles all sent documents and audio files
+    @bot.message_handler(content_types=['photo'])
     def handle_docs_audio(message):
         pass
 
@@ -198,6 +214,12 @@ def startMain():
             check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id, afkNextStep_Message)
 
+    def photNextStepToonify(message):
+        if message.from_user.id in messageManager.userstep:
+            messageManager.send_modified_photo(message, bot)
+        else:
+            check_commands(message)
+            bot.register_next_step_handler_by_chat_id(message.chat.id, photNextStepToonify)
 
 
     bot.polling()
