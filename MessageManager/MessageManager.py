@@ -427,6 +427,7 @@ class MessageManager:
             bot.reply_to(message,messageTosend)
 
     def addMessageToTheStringStatus(self,array,string):
+        string=""
         if not isinstance(array, str):
             if len(array) != 0:
                 dt_object = datetime.fromisoformat(str(array[0]._created_At))
@@ -436,6 +437,8 @@ class MessageManager:
                     name=array[0]._firstName) + \
                                 "<b>Message from him/her</b> :<code> {message}</code>\n".format(message=array[0]._message)+\
                         "<b>At </b>: {time}\n------------------\n".format(time=d)
+            return string
+        else:
             return string
 
     def send_wikisearch(self, bot, message, search):
