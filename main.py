@@ -187,10 +187,6 @@ def startMain():
     @bot.message_handler(content_types=['audio'])
     def handle_docs_audio(message):
         pass
-    # Handles all sent documents and audio files
-    @bot.message_handler(content_types=['photo'])
-    def handle_docs_audio(message):
-        pass
 
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):
@@ -205,20 +201,23 @@ def startMain():
         if message.from_user.id in messageManager.userstep:
             messageManager.send_subscriptionMessageTime(message,bot)
         else:
-            check_commands(message)
+            if message.content_type == 'text':
+                check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
     def afkNextStep_Message(message):
         if message.from_user.id in messageManager.userstep:
             messageManager.setAfkMessage(message,bot)
         else:
-            check_commands(message)
+            if message.content_type == 'text':
+                check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id, afkNextStep_Message)
 
     def photNextStepToonify(message):
         if message.from_user.id in messageManager.userstep:
             messageManager.send_modified_photo(message, bot)
         else:
-            check_commands(message)
+            if message.content_type == 'text':
+                check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id, photNextStepToonify)
 
 
