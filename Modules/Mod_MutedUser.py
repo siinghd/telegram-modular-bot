@@ -25,7 +25,6 @@ class Mod_MutedUser(Mod_Base):
 
         elif name =="funmute":
             userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
-            print(userIds)
             for id in userIds:
                 mutedUser = MutedUser(userIds[id], None, None)
                 res=self.deleteMutedUser(mutedUser)
@@ -34,7 +33,10 @@ class Mod_MutedUser(Mod_Base):
     def getEveryMessageMethod(self,message,bot):
         user = self.getMutedUserById(message.from_user.id)
         if len(user)>0:
-            bot.delete_message(message.chat.id,message.id)
+            try:
+                bot.delete_message(message.chat.id,message.id)
+            except:
+                pass
 
 
     def insertMutedUser(self,mutedUser):
