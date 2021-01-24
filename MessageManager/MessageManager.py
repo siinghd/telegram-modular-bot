@@ -4,7 +4,7 @@ import random
 from telebot import types
 from datetime import datetime
 from DatabaseManager.DatabaseOperation import DatabaseOperation
-from DatabaseManager.DatabaseInitialization import DatabaseInitiaization
+from DatabaseManager.DatabaseInitialization import getDatabaseInitiaization
 from DatabaseManager.Group import Group
 from DatabaseManager.NewsSubscription import NewsSubscription
 from DatabaseManager.User import User
@@ -25,7 +25,7 @@ class MessageManager:
     userstep = []
     userData = [None, None, None]
     databaseOp = DatabaseOperation()
-    databaseInitiaization = DatabaseInitiaization("d53u103lovkkna","vxoxttfardbovf","aedd150942e9b21c9ae78bdd01140c6148a72839060ce4bab047ee46012e0e4f","ec2-52-205-145-201.compute-1.amazonaws.com")
+    databaseInitiaization = getDatabaseInitiaization()
     conn = databaseInitiaization.getConnection()
     cursor = conn.cursor()
     lock = Lock()
@@ -399,9 +399,7 @@ class MessageManager:
             for entity in message.entities:
                 if entity.type == "text_mention":
                     arrayOfMentionsId.append(entity.user.id)
-                    stringMentions = stringMentions + " <a href='tg://user?id={id}'>{name}</a>".format(
-                        id=entity.user.id,
-                        name=entity.user.first_name)
+
 
 
         if message.reply_to_message!=None:
@@ -432,7 +430,7 @@ class MessageManager:
             if len(array) != 0:
                 dt_object = datetime.fromisoformat(str(array[0]._created_At))
                 d = dt_object.strftime("%m/%d/%Y, %H:%M")
-                string = string + "<b>User </b>: <a href='tg://user?id={id}'>{name}</a> is AFK!\n".format(
+                string = string + "<b >User </b>: <a href='tg://user?id={id}'>{name}</a> is AFK!\n".format(
                     id=array[0]._id,
                     name=array[0]._firstName) + \
                                 "<b>Message from him/her</b> :<code> {message}</code>\n".format(message=array[0]._message)+\

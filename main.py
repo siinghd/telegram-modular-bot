@@ -3,6 +3,7 @@ from FeedReceiver.feedReceiver import FeedReceiver
 from Weather.weatherInfo import WeatherInfo
 from MessageManager.MessageManager import MessageManager
 from threading import Thread
+from LoadModules import LoadModules
 def startMain():
     bot = telebot.TeleBot("1496422338:AAHagrAf4xuDUydPeV7aUpUDTIpeJd37qpA", parse_mode="HTML")
     fr = FeedReceiver()
@@ -10,6 +11,9 @@ def startMain():
     messageManager = MessageManager()
     thread = Thread(target=messageManager.send_newsFrequently, args=(fr,bot))
     thread.start()
+    loadModules = LoadModules()
+    loadModules.loadModules()
+    loadModules.loadInstances()
 
     @bot.message_handler(commands=['start', 'help', 'currentnews', 'weather','time',
                                    'subscribenews','unsubscribenews' ,'listnewssubscriptions',
@@ -181,6 +185,16 @@ def startMain():
             messageManager.storeUserToDatabse(message,bot)
             messageManager.checkUserIfHasStatus(message,bot)
             messageManager.checkIfBotMentioned(message,bot)
+            for instance in loadModules.moduleInstaces:
+                try:
+                    instance.getEveryMessageMethod(message, bot)  # How to check whether this exists or not
+                    # Method exists and was used.
+                except AttributeError:
+                    pass
+                # Method does not exist; What now?
+                for name in instance.mod_name:
+                    if name in message.text or name+"@szBrokenBot" in message.text:
+                        instance.handleOnCommand(bot,message,name)
 
 
     # Handles all sent documents and audio files
