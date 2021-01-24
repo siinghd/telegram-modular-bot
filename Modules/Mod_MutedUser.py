@@ -1,7 +1,7 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.MutedUser import MutedUser
 from DatabaseManager.DatabaseOperation import DatabaseOperation
-from Modules.UsefulMethods import getUserIdArray
+from Modules.UsefulMethods import getUserIdArray , getIsAdmin ,NOTADMIN
 from threading import Thread
 class Mod_MutedUser(Mod_Base):
     dbop = DatabaseOperation()
@@ -11,24 +11,30 @@ class Mod_MutedUser(Mod_Base):
 
     def handleOnCommand(self,bot,message,name):
         if name == "fmute":
-            reason = message.text
-            if "/fmute@szBrokenBot" in reason:
-                reason = reason[reason.index("/fmute@szBrokenBot") + len("/fmute@szBrokenBot"):]
-            else:
-                reason = reason[reason.index("/fmute") + len("/fmute"):]
+            if getIsAdmin(bot,message):
+                reason = message.text
+                if "/fmute@szBrokenBot" in reason:
+                    reason = reason[reason.index("/fmute@szBrokenBot") + len("/fmute@szBrokenBot"):]
+                else:
+                    reason = reason[reason.index("/fmute") + len("/fmute"):]
 
-            userIds = getUserIdArray(message,self.dbop.getUserByUsername,self.cursor)
-            for id in userIds:
-                mutedUser = MutedUser(userIds[id],None,None)
-                self.insertMutedUser(mutedUser)
-                bot.reply_to(message, f"User : {id} set to force mute!")
+                userIds = getUserIdArray(message,self.dbop.getUserByUsername,self.cursor)
+                for id in userIds:
+                    mutedUser = MutedUser(userIds[id],None,None)
+                    self.insertMutedUser(mutedUser)
+                    bot.reply_to(message, f"User : {id} set to force mute!")
+            else:
+                bot.reply_to(message,NOTADMIN)
 
         elif name =="funmute":
-            userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
-            for id in userIds:
-                mutedUser = MutedUser(userIds[id], None, None)
-                res=self.deleteMutedUser(mutedUser)
-                bot.reply_to(message,res)
+            if getIsAdmin(bot, message):
+                userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
+                for id in userIds:
+                    mutedUser = MutedUser(userIds[id], None, None)
+                    res=self.deleteMutedUser(mutedUser)
+                    bot.reply_to(message,res)
+            else:
+                bot.reply_to(message,NOTADMIN)
 
     def getEveryMessageMethod(self,message,bot):
         user = self.getMutedUserById(message.from_user.id)

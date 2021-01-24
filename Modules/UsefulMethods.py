@@ -1,4 +1,5 @@
 from DatabaseManager.DatabaseOperation import DatabaseOperation
+NOTADMIN = "Puff , you are not an admin! get some powers :)"
 
 def getUserIdArray(message,method,cursor):
     arrayOfMentionsId = {}
@@ -30,3 +31,11 @@ def getUserIdArray(message,method,cursor):
 
 
     return arrayOfMentionsId
+
+def getIsAdmin(bot,message):
+    isAdmin = False
+    for member in bot.get_chat_administrators(message.chat.id):
+        if member.user.id == message.from_user.id:
+            isAdmin = True
+            break
+    return isAdmin
