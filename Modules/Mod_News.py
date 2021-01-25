@@ -2,23 +2,28 @@ from Modules.Base import Mod_Base
 from DatabaseManager.DatabaseOperation import DatabaseOperation
 from DatabaseManager.Group import Group
 from DatabaseManager.NewsSubscription import NewsSubscription
-
+import time
+from datetime import datetime
 import json
 from FeedReceiver.feedReceiver import FeedReceiver
 import random
 from telebot import types
 from Modules.UsefulMethods import getIsAdmin
 import ModuleCommandChecker
-
+from threading import Thread
 class Mod_News(Mod_Base):
     dbop = DatabaseOperation()
     fr = FeedReceiver()
     userstep = []
     userData = [None, None, None]
     def __init__(self):
-        super(Mod_News, self).__init__(["/currentnews",'/subscribenews'],["Select time"])
+        super(Mod_News, self).__init__(["/currentnews",'/subscribenews',
+                                        '/unsubscribenews','/listnewssubscriptions'],
+                                       ["Select time","Cancel Subscription"])
+        thread = Thread(target=self.send_newsFrequently, args=())
+        thread.start()
 
-    def handleOnCommand(self,bot,message,name):
+    def handleOnCommand(self,message,name):
         if name=="/currentnews":
             country = message.text
             if "/currentnews@szBrokenBot" in country:
@@ -26,26 +31,33 @@ class Mod_News(Mod_Base):
             else:
                 country = country[country.index("/currentnews") + len("/currentnews"):]
             if len(country) == 0:
-                bot.reply_to(message, "Please type country\n/news country name")
+                self.bot.reply_to(message, "Please type country\n/news country name")
             else:
-                self.send_news(self.fr, bot, message, message.chat.id, country.strip())
+                self.send_news(self.fr,message, message.chat.id, country.strip())
         elif name=="/subscribenews":
 
             if message.chat.type =="group" or message.chat.type=="supergroup":
-                if getIsAdmin(bot,message):
-                    self.send_subscriptionMessageCity(message, bot)
-                    bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time,bot)
+                if getIsAdmin(self.bot,message):
+                    self.send_subscriptionMessageCity(message)
+                    self.bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time)
+
                 else:
-                    bot.reply_to(message,"You are not admin in this group")
+                    self.bot.reply_to(message,"You are not admin in this group")
             else:
-                self.send_subscriptionMessageCity(message,bot)
-                bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time,bot)
-    def callBackHandler(self,bot,call,name):
+                self.send_subscriptionMessageCity(message)
+                self.bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time)
+        elif name == "/unsubscribenews" :
+            self.send_unSubscriptionNews(message)
+        elif name == "/listnewssubscriptions" :
+            self.listNewsSubscriptions(message)
+
+    def callBackHandler(self,call,name):
         if "Select time" == name:
-            self.callBackNewsHandler(call,bot)
+            self.callBackNewsHandler(call)
+        if "Cancel Subscription" == name:
+            self.callBackCancelNewsHandler(call)
 
-
-    def send_news(self, fr, bot, message, chatId, country):
+    def send_news(self, fr, message, chatId, country):
         link = "https://news.google.com/news/rss/headlines/section/geo/"
         try:
             fr.check_feeds(link + country)
@@ -53,33 +65,35 @@ class Mod_News(Mod_Base):
             json_object = json.dumps(entries, indent=4)
             resp = json.loads(json_object)
             if message is None:
-                bot.send_message(chatId, "<b>Here are    last 5 news</b>")
+                self.bot.send_message(chatId, "<b>Here are    last 5 news</b>")
             else:
-                bot.reply_to(message, "<b>Here are last 5 news</b>")
+                self.bot.reply_to(message, "<b>Here are last 5 news</b>")
             for x in random.sample(resp, k=5):
                 string = "\n<a href='" + x["link"] + "'><b>" + x['title'] + "</b></a>\n"
-                bot.send_message(chatId, string)
+                self.bot.send_message(chatId, string)
         except Exception:
-            bot.send_message(chatId, "Something bad happened Can't send news")
+            self.bot.send_message(chatId, "Something bad happened Can't send news")
 
 
-    def send_subscriptionMessageCity(self, message, bot):
+    def send_subscriptionMessageCity(self, message):
         self.userData[0] = message.chat.id
         markup = types.ForceReply(selective=True)
         self.userstep.append(message.from_user.id)
-        sent = bot.reply_to(message, "Please type Country name :", reply_markup=markup)
+        sent = self.bot.reply_to(message, "Please type Country name :", reply_markup=markup)
         self.userData[2] = sent.message_id
 
-    def subscriptionNextStep_Time(self,message,bot):
+    def subscriptionNextStep_Time(self,message):
+
         if message.from_user.id in self.userstep:
-            self.send_subscriptionMessageTime(message,bot)
+            self.send_subscriptionMessageTime(message)
         else:
             if message.content_type == 'text':
-                ModuleCommandChecker.checkCommand(message,bot)
-            bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time,bot)
+                ModuleCommandChecker.checkCommand(message)
 
-    def send_subscriptionMessageTime(self, message, bot):
-        bot.delete_message(self.userData[0], self.userData[2])
+            self.bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time)
+
+    def send_subscriptionMessageTime(self, message):
+        self.bot.delete_message(self.userData[0], self.userData[2])
         self.userData[1] = message.text
         markup = types.InlineKeyboardMarkup()
         buttons = []
@@ -118,14 +132,14 @@ class Mod_News(Mod_Base):
         markup.row(buttons[21], buttons[22], buttons[23])
         markup.row(buttons[24])
 
-        bot.send_message(message.chat.id, "Select time", reply_markup=markup)
+        self.bot.send_message(message.chat.id, "Select time", reply_markup=markup)
 
 
-    def callBackNewsHandler(self, data, bot):
+    def callBackNewsHandler(self, data):
         if data.from_user.id in self.userstep:
             self.userstep.remove(data.from_user.id)
             if "Cancel" in data.data:
-                bot.delete_message(self.userData[0], data.message.id)
+                self.bot.delete_message(self.userData[0], data.message.id)
             else:
                 group = Group(data.message.chat.id, data.message.chat.title)
                 newsSubscription = NewsSubscription(data.message.id, self.userData[1], data.data, self.userData[0], 1)
@@ -134,7 +148,63 @@ class Mod_News(Mod_Base):
                     self.conn.commit()
                     stringMsg = self.dbop.insertnewSubscription(newsSubscription, self.cursor)
                     self.conn.commit()
-                    bot.delete_message(self.userData[0], data.message.id)
-                    bot.send_message(self.userData[0], stringMsg)
+                    self.bot.delete_message(self.userData[0], data.message.id)
+                    self.bot.send_message(self.userData[0], stringMsg)
                 else:
-                    bot.send_message(self.userData[0], "Ops something went wrong!")
+                    self.bot.send_message(self.userData[0], "Ops something went wrong!")
+
+    def send_unSubscriptionNews(self, message):
+        self.userstep.append(message.from_user.id)
+        activeSubs = self.dbop.getNews_byGroupSubscriptions(self.cursor, message.chat.id)
+        if len(activeSubs) == 0:
+            self.bot.reply_to(message, "This chat has 0 subscriptions to cancel")
+            return
+        markup = types.InlineKeyboardMarkup()
+        buttons = []
+        for activeSub in activeSubs:
+            buttons.append(types.InlineKeyboardButton(text="Cancel " + activeSub._state, callback_data=activeSub._id))
+
+        buttons.append(types.InlineKeyboardButton(text="Cancel", callback_data="Cancel"))
+        for b in buttons:
+            markup.row(b)
+
+        self.bot.send_message(message.chat.id, "Cancel Subscription", reply_markup=markup)
+
+    def callBackCancelNewsHandler(self, call):
+        if call.from_user.id in self.userstep:
+            self.userstep.remove(call.from_user.id)
+            if "Cancel" in call.data:
+                self.bot.delete_message(call.message.chat.id, call.message.id)
+            else:
+                msg = self.dbop.update_subscription(call.data, None, 0, self.cursor)
+                self.conn.commit()
+                self.bot.delete_message(call.message.chat.id, call.message.id)
+                self.bot.send_message(call.message.chat.id, msg)
+    def listNewsSubscriptions(self, message):
+        activeSubs = self.dbop.getNews_byGroupSubscriptions(self.cursor, message.chat.id)
+        if len(activeSubs) == 0:
+            self.bot.reply_to(message, "This chat has 0 news subscriptions ")
+            return
+
+        string = "<b>Here is Your list :</b>\n"
+        for activeSub in activeSubs:
+            string = string + "{state} at {time}\n".format(state=activeSub._state, time=activeSub._time)
+
+        self.bot.reply_to(message, string)
+
+    def send_newsFrequently(self):
+        for days in range(0, 365):
+            for hours in (0, 24):
+                now = datetime.now()
+                current_time = now.strftime("%H:%M")
+                if current_time > "12:00":
+                    current_time = now.strftime("%I:%M") + "PM"
+                else:
+                    current_time = now.strftime("%I:%M") + "AM"
+                items = self.dbop.getNews_Subscriptions(self.cursor)
+                if not isinstance(items, str):
+                    for item in items:
+                        if current_time == item._time:
+                            self.send_news(self.fr, None, item._groupId, item._state)
+                            time.sleep(15)
+                time.sleep(60)

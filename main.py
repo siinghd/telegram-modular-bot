@@ -1,21 +1,15 @@
-import telebot
-from FeedReceiver.feedReceiver import FeedReceiver
+
 from Weather.weatherInfo import WeatherInfo
 from MessageManager.MessageManager import MessageManager
-from threading import Thread
-from ModuleCommandChecker import checkCommand , checkCallback
-
+import ModuleCommandChecker
+from Bot import Bot
 def startMain():
-    bot = telebot.TeleBot("1496422338:AAHagrAf4xuDUydPeV7aUpUDTIpeJd37qpA", parse_mode="HTML")
-    fr = FeedReceiver()
     weatherInfo = WeatherInfo()
     messageManager = MessageManager()
-    thread = Thread(target=messageManager.send_newsFrequently, args=(fr,bot))
-    thread.start()
-
-
+    botclass= Bot.getInstance()
+    bot = botclass.bot
     @bot.message_handler(commands=['start', 'help', 'weather','time',
-                                   'unsubscribenews' ,'listnewssubscriptions',
+
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
                                    'totext','tospeech','chatinfo','modifyphoto'])
@@ -80,12 +74,6 @@ def startMain():
                 messageManager.send_wikisearch(bot,message,search)
         elif "/_getinfouser" == message.text.lower() or "/_getinfouser@szbrokenbot" == message.text.lower():
             messageManager.sendUserInfoFile(message,bot)
-
-        elif "/unsubscribenews" == message.text.lower() or "/unsubscribenews@szbrokenbot" == message.text.lower():
-            messageManager.send_unSubscriptionNews(message, bot)
-
-        elif "/listnewssubscriptions" == message.text.lower() or "/listnewssubscriptions@szbrokenbot" == message.text.lower():
-            messageManager.listNewsSubscriptions(message, bot)
         elif "/setmeafk" == message.text.lower() or "/setmeafk@szbrokenbot" == message.text.lower():
             messageManager.send_userAfkMessage(message,bot)
             bot.register_next_step_handler_by_chat_id(message.chat.id,afkNextStep_Message)
@@ -164,7 +152,7 @@ def startMain():
             messageManager.storeUserToDatabse(message,bot)
             messageManager.checkUserIfHasStatus(message,bot)
             messageManager.checkIfBotMentioned(message,bot)
-            checkCommand(bot,message)
+            ModuleCommandChecker.checkCommand(message)
 
 
     # Handles all sent documents and audio files
@@ -174,11 +162,9 @@ def startMain():
 
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):
-        checkCallback(bot,call)
-        if "Cancel Subscription" == call.message.text:
-            messageManager.callBackCancelNewsHandler(call,bot)
+        ModuleCommandChecker.checkCallback(call)
         if "Select Your search" == call.message.text:
-            messageManager.callBackWikiHandler(call,bot)
+            messageManager.callBackWikiHandler(call)
 
     # def subscriptionNextStep_Time(message):
     #     if message.from_user.id in messageManager.userstep:

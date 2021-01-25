@@ -8,9 +8,9 @@ class Mod_MutedUser(Mod_Base):
     def __init__(self):
         super(Mod_MutedUser,self).__init__(["/fmute","/funmute"],[])
 
-    def handleOnCommand(self,bot,message,name):
+    def handleOnCommand(self,message,name):
         if name == "/fmute":
-            if getIsAdmin(bot,message):
+            if getIsAdmin(self.bot,message):
                 reason = message.text
                 if "/fmute@szBrokenBot" in reason:
                     reason = reason[reason.index("/fmute@szBrokenBot") + len("/fmute@szBrokenBot"):]
@@ -21,25 +21,25 @@ class Mod_MutedUser(Mod_Base):
                 for id in userIds:
                     mutedUser = MutedUser(userIds[id],None,None)
                     self.insertMutedUser(mutedUser)
-                    bot.reply_to(message, f"User : {id} set to force mute!")
+                    self.bot.reply_to(message, f"User : {id} set to force mute!")
             else:
-                bot.reply_to(message,NOTADMIN)
+                self.bot.reply_to(message,NOTADMIN)
 
         elif name =="/funmute":
-            if getIsAdmin(bot, message):
+            if getIsAdmin(self.bot, message):
                 userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
                 for id in userIds:
                     mutedUser = MutedUser(userIds[id], None, None)
                     res=self.deleteMutedUser(mutedUser)
-                    bot.reply_to(message,res)
+                    self.bot.reply_to(message,res)
             else:
-                bot.reply_to(message,NOTADMIN)
+                self.bot.reply_to(message,NOTADMIN)
 
-    def getEveryMessageMethod(self,message,bot):
+    def getEveryMessageMethod(self,message):
         user = self.getMutedUserById(message.from_user.id)
         if len(user)>0:
             try:
-                bot.delete_message(message.chat.id,message.id)
+                self.bot.delete_message(message.chat.id,message.id)
             except:
                 pass
 
