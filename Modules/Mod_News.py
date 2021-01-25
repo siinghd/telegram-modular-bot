@@ -34,7 +34,7 @@ class Mod_News(Mod_Base):
             if message.chat.type =="group" or message.chat.type=="supergroup":
                 if getIsAdmin(bot,message):
                     self.send_subscriptionMessageCity(message, bot)
-                    bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time)
+                    bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time,bot)
                 else:
                     bot.reply_to(message,"You are not admin in this group")
             else:
