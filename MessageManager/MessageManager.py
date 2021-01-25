@@ -619,6 +619,7 @@ class MessageManager:
             bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
             self.userstep.remove(message.from_user.id)
         else:
+            self.userstep.remove(message.from_user.id)
             if len(message.photo)==1:
                 url=bot.get_file_url(message.photo[0].file_id)
             elif len(message.photo)==2:
@@ -640,14 +641,13 @@ class MessageManager:
             dictionary = json.loads(response)
             if  'err' in dictionary:
                 bot.reply_to(message,f"An error occurred processing photo, please check your photo and make sure that it have visible face!")
-                self.userstep.remove(message.from_user.id)
+
             else:
                 apiurl = dictionary['output_url']
                 saveImg= dictionary['id']+".jpg"
                 r = requests.get(apiurl, allow_redirects=True)
                 open(saveImg, 'wb').write(r.content)
                 photo = open(saveImg, 'rb')
-                self.userstep.remove(message.from_user.id)
                 bot.send_photo(message.chat.id,photo,"Here is your photo!",message.id)
                 photo.close()
                 if os.path.exists(saveImg):
