@@ -30,9 +30,8 @@ class Mod_News(Mod_Base):
             else:
                 self.send_news(self.fr, bot, message, message.chat.id, country.strip())
         elif name=="/subscribenews":
-          
+
             if message.chat.type =="group" or message.chat.type=="supergroup":
-                print(bot,getIsAdmin(bot,message))
                 if getIsAdmin(bot,message):
                     self.send_subscriptionMessageCity(message, bot)
                     bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time)
