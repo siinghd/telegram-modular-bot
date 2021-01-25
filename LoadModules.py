@@ -3,6 +3,7 @@ import importlib
 class LoadModules:
     modulesloaded={}
     modulesName=[]
+    modulesCallBackNames=[]
     moduleInstaces = []
     def __init__(self):
         self.files=os.listdir("Modules")

@@ -2,15 +2,14 @@ from Modules.Base import Mod_Base
 from DatabaseManager.MutedUser import MutedUser
 from DatabaseManager.DatabaseOperation import DatabaseOperation
 from Modules.UsefulMethods import getUserIdArray , getIsAdmin ,NOTADMIN
-from threading import Thread
 class Mod_MutedUser(Mod_Base):
     dbop = DatabaseOperation()
 
     def __init__(self):
-        super(Mod_MutedUser,self).__init__(["fmute","funmute"])
+        super(Mod_MutedUser,self).__init__(["/fmute","/funmute"],[])
 
     def handleOnCommand(self,bot,message,name):
-        if name == "fmute":
+        if name == "/fmute":
             if getIsAdmin(bot,message):
                 reason = message.text
                 if "/fmute@szBrokenBot" in reason:
@@ -26,7 +25,7 @@ class Mod_MutedUser(Mod_Base):
             else:
                 bot.reply_to(message,NOTADMIN)
 
-        elif name =="funmute":
+        elif name =="/funmute":
             if getIsAdmin(bot, message):
                 userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
                 for id in userIds:

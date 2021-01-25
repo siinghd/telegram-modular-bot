@@ -3,7 +3,8 @@ from FeedReceiver.feedReceiver import FeedReceiver
 from Weather.weatherInfo import WeatherInfo
 from MessageManager.MessageManager import MessageManager
 from threading import Thread
-from LoadModules import LoadModules
+from ModuleCommandChecker import checkCommand , checkCallback
+
 def startMain():
     bot = telebot.TeleBot("1496422338:AAHagrAf4xuDUydPeV7aUpUDTIpeJd37qpA", parse_mode="HTML")
     fr = FeedReceiver()
@@ -11,12 +12,10 @@ def startMain():
     messageManager = MessageManager()
     thread = Thread(target=messageManager.send_newsFrequently, args=(fr,bot))
     thread.start()
-    loadModules = LoadModules()
-    loadModules.loadModules()
-    loadModules.loadInstances()
 
-    @bot.message_handler(commands=['start', 'help', 'currentnews', 'weather','time',
-                                   'subscribenews','unsubscribenews' ,'listnewssubscriptions',
+
+    @bot.message_handler(commands=['start', 'help', 'weather','time',
+                                   'unsubscribenews' ,'listnewssubscriptions',
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
                                    'totext','tospeech','chatinfo','modifyphoto'])
@@ -39,16 +38,6 @@ def startMain():
                       "<b>Text to audio (beta)</b> - /tospeech Reply to text message\n"+ \
                       "<b>Modify photo</b> - /modifyphoto Modify your photo to disney style\n"
             bot.reply_to(message, msgHelp)
-        elif "/currentnews" in message.text.lower():
-             country = message.text
-             if "/currentnews@szBrokenBot" in country:
-                 country = country[country.index("/currentnews@szBrokenBot") + len("/currentnews@szBrokenBot"):]
-             else:
-                 country = country[country.index("/currentnews") + len("/currentnews"):]
-             if len(country)==0:
-                 bot.reply_to(message,"Please type country\n/news country name")
-             else:
-                messageManager.send_news(fr,bot,message,message.chat.id,country.strip())
         elif "/weather" in message.text.lower():
             city = message.text
             if "/weather@szBrokenBot" in city:
@@ -92,16 +81,6 @@ def startMain():
         elif "/_getinfouser" == message.text.lower() or "/_getinfouser@szbrokenbot" == message.text.lower():
             messageManager.sendUserInfoFile(message,bot)
 
-        elif "/subscribenews" == message.text.lower() or "/subscribenews@szbrokenbot" == message.text.lower():
-            if message.chat.type =="group":
-                if messageManager.getIsAdmin(bot,message):
-                    messageManager.send_subscriptionMessageCity(message, bot)
-                    bot.register_next_step_handler_by_chat_id(message.chat.id, subscriptionNextStep_Time)
-                else:
-                    bot.reply_to(message,"You are not admin in this group")
-            else:
-                messageManager.send_subscriptionMessageCity(message,bot)
-                bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
         elif "/unsubscribenews" == message.text.lower() or "/unsubscribenews@szbrokenbot" == message.text.lower():
             messageManager.send_unSubscriptionNews(message, bot)
 
@@ -185,16 +164,7 @@ def startMain():
             messageManager.storeUserToDatabse(message,bot)
             messageManager.checkUserIfHasStatus(message,bot)
             messageManager.checkIfBotMentioned(message,bot)
-            for instance in loadModules.moduleInstaces:
-                try:
-                    instance.getEveryMessageMethod(message, bot)  # How to check whether this exists or not
-                    # Method exists and was used.
-                except AttributeError:
-                    pass
-                # Method does not exist; What now?
-                for name in instance.mod_name:
-                    if name in message.text or name+"@szBrokenBot" in message.text:
-                        instance.handleOnCommand(bot,message,name)
+            checkCommand(bot,message)
 
 
     # Handles all sent documents and audio files
@@ -204,20 +174,19 @@ def startMain():
 
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):
-        if "Select time" == call.message.text:
-            messageManager.callBackNewsHandler(call,bot)
+        checkCallback(bot,call)
         if "Cancel Subscription" == call.message.text:
             messageManager.callBackCancelNewsHandler(call,bot)
         if "Select Your search" == call.message.text:
             messageManager.callBackWikiHandler(call,bot)
 
-    def subscriptionNextStep_Time(message):
-        if message.from_user.id in messageManager.userstep:
-            messageManager.send_subscriptionMessageTime(message,bot)
-        else:
-            if message.content_type == 'text':
-                check_commands(message)
-            bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
+    # def subscriptionNextStep_Time(message):
+    #     if message.from_user.id in messageManager.userstep:
+    #         messageManager.send_subscriptionMessageTime(message,bot)
+    #     else:
+    #         if message.content_type == 'text':
+    #             check_commands(message)
+    #         bot.register_next_step_handler_by_chat_id(message.chat.id,subscriptionNextStep_Time)
     def afkNextStep_Message(message):
         if message.from_user.id in messageManager.userstep:
             messageManager.setAfkMessage(message,bot)
