@@ -199,7 +199,12 @@ class MessageManager:
             lastname = message.from_user.last_name
         user = User(message.from_user.id,bot,message.from_user.first_name
                     ,username,lastname)
+        group=None
+        if message.chat.type == "group" or message.chat.type == "supergroup":
+            group = Group(message.chat.id,message.chat.title)
         try:
+            if group!=None:
+                self.databaseOp.insertGroup(group,self.cursor)
             # self.lock.acquire(True)
             self.databaseOp.insertUser(user,self.cursor)
             self.conn.commit()

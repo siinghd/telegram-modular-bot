@@ -17,7 +17,7 @@ class Mod_BannedWord(Mod_Base):
                     self.bot.reply_to(message, "Please type the word\n/bword word")
                 else:
                     word = word.replace(" ","")
-                    self.ban_word(message,word)
+                    self.ban_word(message,word.lower())
             else:
                 self.bot.reply_to(message,NOTADMIN)
         elif name=="/listbword":
@@ -43,7 +43,7 @@ class Mod_BannedWord(Mod_Base):
                     self.bot.reply_to(message, "Please type the word\n/dbword word")
                 else:
                     word = word.replace(" ", "")
-                    self.rm_ban_word(message, word)
+                    self.rm_ban_word(message, word.lower())
             else:
                 self.bot.reply_to(message, NOTADMIN)
     def ban_word(self, message, word):
@@ -54,9 +54,12 @@ class Mod_BannedWord(Mod_Base):
         else:
             self.bot.reply_to(message,resp)
     def rm_ban_word(self, message, word):
+
         bannedword= BannedWords(message.id,message.chat.id,word,None)
         resp = self.deleteBannedWord(bannedword)
-        self.bot.reply_to(message,resp)
+
+        self.bot.send_message(message.chat.id,resp)
+
     def insert_ban_word(self,bannedword):
         try:
             self.cursor.execute(f"""Select id from bannedwords where word='{bannedword._word}' AND groupid={bannedword._groupid}""")
@@ -103,6 +106,7 @@ class Mod_BannedWord(Mod_Base):
     #     except Exception:
     #         return "Something went wrong retry!"
     def deleteBannedWord(self,bannedword):
+
         try:
              self.cursor.execute(f"""DELETE FROM bannedwords
                                     WHERE word='{bannedword._word}'AND groupid={bannedword._groupid}""")
