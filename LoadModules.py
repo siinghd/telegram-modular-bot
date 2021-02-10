@@ -14,6 +14,7 @@ class LoadModules:
             modName= file[:-3]
             PLUG_NAME= f"Modules.{modName}"
             if "Mod_" in PLUG_NAME:
+                self.modulesName.append(modName)
                 self.modulesloaded[modName]=importlib.import_module(PLUG_NAME)
 
     def loadInstances(self):

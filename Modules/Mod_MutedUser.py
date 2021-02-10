@@ -1,42 +1,56 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.MutedUser import MutedUser
 from DatabaseManager.DatabaseOperation import DatabaseOperation
-from Modules.UsefulMethods import getUserIdArray , getIsAdmin ,NOTADMIN
+from Modules.UsefulMethods import getUserIdArray ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN
 class Mod_MutedUser(Mod_Base):
     dbop = DatabaseOperation()
 
     def __init__(self):
-        super(Mod_MutedUser,self).__init__(["/fmute","/funmute"],[])
+        super(Mod_MutedUser,self).__init__("MutedUser",["/fmute","/funmute"],[])
 
     def handleOnCommand(self,message,name):
-        if name == "/fmute":
-            if getIsAdmin(self.bot,message):
-                reason = message.text
-                if "/fmute@szBrokenBot" in reason:
-                    reason = reason[reason.index("/fmute@szBrokenBot") + len("/fmute@szBrokenBot"):]
-                else:
-                    reason = reason[reason.index("/fmute") + len("/fmute"):]
+        try:
+            if not isPrivateChat(message):
+                if name == "/fmute":
+                        if getBotIsAdmin(self.bot,message):
+                            if getIsAdmin(self.bot,message):
 
-                userIds = getUserIdArray(message,self.dbop.getUserByUsername,self.cursor)
-                for id in userIds:
-                    mutedUser = MutedUser(userIds[id],None,None)
-                    self.insertMutedUser(mutedUser)
-                    self.bot.reply_to(message, f"User : {id} set to force mute!")
-            else:
-                self.bot.reply_to(message,NOTADMIN)
+                                reason = message.text
+                                if "/fmute@szBrokenBot" in reason:
+                                    reason = reason[reason.index("/fmute@szBrokenBot") + len("/fmute@szBrokenBot"):]
+                                else:
+                                    reason = reason[reason.index("/fmute") + len("/fmute"):]
 
-        elif name =="/funmute":
-            if getIsAdmin(self.bot, message):
-                userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
-                for id in userIds:
-                    mutedUser = MutedUser(userIds[id], None, None)
-                    res=self.deleteMutedUser(mutedUser)
-                    self.bot.reply_to(message,res)
+                                userIds = getUserIdArray(message,self.dbop.getUserByUsername,self.cursor)
+                                for id in userIds:
+                                    mutedUser = MutedUser(userIds[id],None,None,message.chat.id)
+                                    self.insertMutedUser(mutedUser)
+                                    self.bot.send_message(message.chat.id, f"User : {id} set to force mute!")
+                            else:
+                                self.bot.reply_to(message,NOTADMIN)
+                        else:
+                            self.bot.reply_to(message, BOTNOTADMIN)
+
+                elif name =="/funmute":
+                    if getBotIsAdmin(self.bot,message):
+                        if getIsAdmin(self.bot, message):
+                            userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
+                            for id in userIds:
+                                mutedUser = MutedUser(userIds[id], None, None,message.chat.id)
+                                res=self.deleteMutedUser(mutedUser)
+                                self.bot.send_message(message.chat.id,res)
+                        else:
+                            self.bot.reply_to(message,NOTADMIN)
+                    else:
+                        self.bot.reply_to(message, BOTNOTADMIN)
             else:
-                self.bot.reply_to(message,NOTADMIN)
+                self.bot.reply_to(message, PRIVATECHAT)
+        except Exception:
+            print(Exception)
 
     def getEveryMessageMethod(self,message):
-        user = self.getMutedUserById(message.from_user.id)
+        mutedUser = MutedUser(message.from_user.id, None, None, message.chat.id)
+        user = self.getMutedUserById(mutedUser)
         if len(user)>0:
             try:
                 self.bot.delete_message(message.chat.id,message.id)
@@ -45,19 +59,20 @@ class Mod_MutedUser(Mod_Base):
 
 
     def insertMutedUser(self,mutedUser):
+
         try:
-            self.cursor.execute(f"""Select userid from mutedusers where userid={mutedUser._id}""")
-            item = self.cursor.fetchall();
+            self.cursor.execute(f"""Select userid from mutedusers where userid={mutedUser._id} AND groupid = {mutedUser._groupid}""")
+            item = self.cursor.fetchall()
             if len(item)==0:
-                self.cursor.execute(f"INSERT INTO mutedusers VALUES ({mutedUser._id},'{mutedUser._reason}','{mutedUser._created_At}')")
+                self.cursor.execute(f"INSERT INTO mutedusers VALUES ({mutedUser._id},'{mutedUser._reason}','{mutedUser._created_At}',{mutedUser._groupid})")
 
             return "ok"
         except Exception:
             return "Something went wrong retry!"
 
-    def getMutedUserById(self,id):
+    def getMutedUserById(self,mutedUser):
         try:
-            self.cursor.execute(f"""Select * from mutedusers WHERE userId={id}""")
+            self.cursor.execute(f"""Select * from mutedusers WHERE userId={mutedUser._id} AND groupid={mutedUser._groupid}""")
             items = self.cursor.fetchall()
             arrayI = []
             for i in items:
@@ -69,17 +84,21 @@ class Mod_MutedUser(Mod_Base):
             return "Something went wrong retry!"
     def deleteMutedUser(self,mutedUser):
         try:
-            self.cursor.execute(f"""Select userId from mutedusers where userId={mutedUser._id}""")
+            self.cursor.execute(f"""Select userId from mutedusers where userId={mutedUser._id} AND groupid={mutedUser._groupid}""")
             item = self.cursor.fetchall()
             if len(item)==0:
                 return "User is already unmuted"
 
             else:
                 self.cursor.execute(f"""DELETE FROM mutedusers
-            WHERE userId={mutedUser._id}""")
-                return "User unmuted seccessfully"
+            WHERE userId={mutedUser._id} AND groupid={mutedUser._groupid}""")
+                return "User unmuted successfully"
         except Exception:
             return "Something went wrong retry!"
 
 
-
+    def help_mod(self):
+        help =f"Help of MutedUser\n"+\
+              f"/fmute - set user to force mute(used also with admins!)\n"+\
+              f"/funmute - remove user from force mute"
+        return help

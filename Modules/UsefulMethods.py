@@ -2,8 +2,8 @@ from DatabaseManager.DatabaseOperation import DatabaseOperation
 
 
 NOTADMIN = "Puff , you are not an admin! get some powers :)"
-
-
+BOTNOTADMIN = "Puff , I'm not a admin! give me some power to do this! :("
+PRIVATECHAT ="Command not avaible in private chat!"
 def getUserIdArray(message,method,cursor):
     arrayOfMentionsId = {}
     metionarray = []
@@ -42,4 +42,20 @@ def getIsAdmin(bot,message):
             isAdmin = True
             break
     return isAdmin
+
+def getBotIsAdmin(bot,message):
+    isAdmin = False
+    botId= bot.get_me()
+
+    botId=botId.id
+    for member in bot.get_chat_administrators(message.chat.id):
+        if member.user.id == botId:
+            isAdmin = True
+            break
+    return isAdmin
+def isPrivateChat(message):
+    if message.chat.type == "group" or message.chat.type == "supergroup" :
+        return False
+    else:
+        return True
 

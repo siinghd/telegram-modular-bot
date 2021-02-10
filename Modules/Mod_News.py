@@ -17,39 +17,42 @@ class Mod_News(Mod_Base):
     userstep = []
     userData = [None, None, None]
     def __init__(self):
-        super(Mod_News, self).__init__(["/currentnews",'/subscribenews',
+        super(Mod_News, self).__init__("News",["/currentnews",'/subscribenews',
                                         '/unsubscribenews','/listnewssubscriptions'],
                                        ["Select time","Cancel Subscription"])
         thread = Thread(target=self.send_newsFrequently, args=())
         thread.start()
 
     def handleOnCommand(self,message,name):
-        if name=="/currentnews":
-            country = message.text
-            if "/currentnews@szBrokenBot" in country:
-                country = country[country.index("/currentnews@szBrokenBot") + len("/currentnews@szBrokenBot"):]
-            else:
-                country = country[country.index("/currentnews") + len("/currentnews"):]
-            if len(country) == 0:
-                self.bot.reply_to(message, "Please type country\n/news country name")
-            else:
-                self.send_news(self.fr,message, message.chat.id, country.strip())
-        elif name=="/subscribenews":
-
-            if message.chat.type =="group" or message.chat.type=="supergroup":
-                if getIsAdmin(self.bot,message):
-                    self.send_subscriptionMessageCity(message)
-                    self.bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time)
-
+        try:
+            if name=="/currentnews":
+                country = message.text
+                if "/currentnews@szBrokenBot" in country:
+                    country = country[country.index("/currentnews@szBrokenBot") + len("/currentnews@szBrokenBot"):]
                 else:
-                    self.bot.reply_to(message,"You are not admin in this group")
-            else:
-                self.send_subscriptionMessageCity(message)
-                self.bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time)
-        elif name == "/unsubscribenews" :
-            self.send_unSubscriptionNews(message)
-        elif name == "/listnewssubscriptions" :
-            self.listNewsSubscriptions(message)
+                    country = country[country.index("/currentnews") + len("/currentnews"):]
+                if len(country) == 0:
+                    self.bot.reply_to(message, "Please type country\n/news country name")
+                else:
+                    self.send_news(self.fr,message, message.chat.id, country.strip())
+            elif name=="/subscribenews":
+
+                if message.chat.type =="group" or message.chat.type=="supergroup":
+                    if getIsAdmin(self.bot,message):
+                        self.send_subscriptionMessageCity(message)
+                        self.bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time)
+
+                    else:
+                        self.bot.reply_to(message,"You are not admin in this group")
+                else:
+                    self.send_subscriptionMessageCity(message)
+                    self.bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time)
+            elif name == "/unsubscribenews" :
+                self.send_unSubscriptionNews(message)
+            elif name == "/listnewssubscriptions" :
+                self.listNewsSubscriptions(message)
+        except Exception:
+            print(Exception)
 
     def callBackHandler(self,call,name):
         if "Select time" == name:
@@ -208,3 +211,10 @@ class Mod_News(Mod_Base):
                             self.send_news(self.fr, None, item._groupId, item._state)
                             time.sleep(15)
                 time.sleep(60)
+
+    def help_mod(self):
+        help = f"Help of News"+\
+            "<b>Subscribenews</b> - /subscribenews to daily news update\n"+ \
+                      "<b>UnSubscribenews</b> - /unsubscribenews Cancel your subscriptions\n" + \
+                      "<b>List news subscriptions</b> - /listnewssubscriptions list news subscriptions\n"
+        return help

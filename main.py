@@ -8,7 +8,7 @@ def startMain():
     messageManager = MessageManager()
     botclass= Bot.getInstance()
     bot = botclass.bot
-    @bot.message_handler(commands=['start', 'help', 'weather','time',
+    @bot.message_handler(commands=['start', 'weather','time',
 
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
@@ -16,22 +16,6 @@ def startMain():
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
-        elif "/help" in message.text.lower():
-            msgHelp = "<b>Subscribenews</b> - /subscribenews to daily news update\n"+ \
-                      "<b>UnSubscribenews</b> - /unsubscribenews Cancel your subscriptions\n" + \
-                      "<b>List news subscriptions</b> - /listnewssubscriptions list news subscriptions\n" + \
-                      "<b>Time</b> - /time City name\n"+\
-                      "<b>Weather</b> - /weather City name\n"+\
-                      "<b>Set Afk</b> - /setmeafk Set your status to AFK\n"+\
-                      "<b>See if you have afk status</b> - /seemyafkstatus\n"+\
-                      "<b>Delete your afk status</b> - /deletemyafkstatus\n"+ \
-                      "<b>Info from wikipedia</b> - /wiki Word\n"+ \
-                      "<b>Find meaning</b> - /meaning Word\n"+ \
-                      "<b>Generate meme (beta)</b> - /generatememe text1,text2\n"+ \
-                      "<b>Audio to text (beta)</b> - /totext Reply to voice message\n"+\
-                      "<b>Text to audio (beta)</b> - /tospeech Reply to text message\n"+ \
-                      "<b>Modify photo</b> - /modifyphoto Modify your photo to disney style\n"
-            bot.reply_to(message, msgHelp)
         elif "/weather" in message.text.lower():
             city = message.text
             if "/weather@szBrokenBot" in city:
@@ -140,13 +124,7 @@ def startMain():
 
     @bot.message_handler(func=lambda message: True)
     def messageHandler(message):
-        if "alisha cutie" in message.text.lower():
-            messageManager.send_alisha_msg(message,bot)
-        elif "aliora brother" in message.text.lower():
-            messageManager.send_aliora_brother(message,bot)
-        elif "corp brother" in message.text.lower():
-            messageManager.send_copr_brother(message,bot)
-        elif "_discuss" in message.text.lower():
+        if "_discuss" in message.text.lower():
             messageManager.send_discussion_cheerful(message,bot)
         else:
             messageManager.storeUserToDatabse(message,bot)

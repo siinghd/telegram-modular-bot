@@ -1,51 +1,61 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.BannedWords import BannedWords
-from Modules.UsefulMethods import getUserIdArray , getIsAdmin ,NOTADMIN
+from Modules.UsefulMethods import getUserIdArray ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN
 class Mod_BannedWord(Mod_Base):
     def __init__(self):
-        super(Mod_BannedWord, self).__init__(["/bword","/listbword","/dbword"],
+        super(Mod_BannedWord, self).__init__("BannedWord",["/bword","/listbword","/dbword"],
                                        [])
     def handleOnCommand(self,message,name):
-        if name=="/bword":
-            if getIsAdmin(self.bot,message):
-                word = message.text
-                if "/bword@szBrokenBot" in word:
-                    word = word[word.index("/bword@szBrokenBot") + len("/bword@szBrokenBot"):]
+        try:
+            if not isPrivateChat(message):
+                if getBotIsAdmin(self.bot,message):
+                    if name=="/bword":
+                        if getIsAdmin(self.bot,message):
+                            word = message.text
+                            if "/bword@szBrokenBot" in word:
+                                word = word[word.index("/bword@szBrokenBot") + len("/bword@szBrokenBot"):]
+                            else:
+                                word = word[word.index("/bword") + len("/bword"):]
+                            if len(word) == 0:
+                                self.bot.reply_to(message, "Please type the word\n/bword word")
+                            else:
+                                word = word.replace(" ","")
+                                self.ban_word(message,word.lower())
+                        else:
+                            self.bot.reply_to(message,NOTADMIN)
+                    elif name=="/listbword":
+                        words = self.getBannedWordsByGroup(message.chat.id)
+                        if isinstance(words, str):
+                            self.bot.reply_to(message,"Ops, something went wonrg,retry!")
+                        else:
+                            if len(words)>0:
+                                msgtosend=f"<b>Here is list of banned words:</b>\n"
+                                for word in words:
+                                    msgtosend+=f"{word._word}\n"
+                                self.bot.reply_to(message,msgtosend)
+                            else:
+                                self.bot.reply_to(message, "This group has no banned words")
+                    elif name == "/dbword" :
+                        if getIsAdmin(self.bot,message):
+                            word = message.text
+                            if "/dbword@szBrokenBot" in word:
+                                word = word[word.index("/dbword@szBrokenBot") + len("/dbword@szBrokenBot"):]
+                            else:
+                                word = word[word.index("/dbword") + len("/dbword"):]
+                            if len(word) == 0:
+                                self.bot.reply_to(message, "Please type the word\n/dbword word")
+                            else:
+                                word = word.replace(" ", "")
+                                self.rm_ban_word(message, word.lower())
+                        else:
+                            self.bot.reply_to(message, NOTADMIN)
                 else:
-                    word = word[word.index("/bword") + len("/bword"):]
-                if len(word) == 0:
-                    self.bot.reply_to(message, "Please type the word\n/bword word")
-                else:
-                    word = word.replace(" ","")
-                    self.ban_word(message,word.lower())
+                    self.bot.reply_to(message, BOTNOTADMIN)
             else:
-                self.bot.reply_to(message,NOTADMIN)
-        elif name=="/listbword":
-            words = self.getBannedWordsByGroup(message.chat.id)
-            if isinstance(words, str):
-                self.bot.reply_to(message,"Ops, something went wonrg,retry!")
-            else:
-                if len(words)>0:
-                    msgtosend=f"<b>Here is list of banned words:</b>\n"
-                    for word in words:
-                        msgtosend+=f"{word._word}\n"
-                    self.bot.reply_to(message,msgtosend)
-                else:
-                    self.bot.reply_to(message, "This group has no banned words")
-        elif name == "/dbword" :
-            if getIsAdmin(self.bot,message):
-                word = message.text
-                if "/dbword@szBrokenBot" in word:
-                    word = word[word.index("/dbword@szBrokenBot") + len("/dbword@szBrokenBot"):]
-                else:
-                    word = word[word.index("/dbword") + len("/dbword"):]
-                if len(word) == 0:
-                    self.bot.reply_to(message, "Please type the word\n/dbword word")
-                else:
-                    word = word.replace(" ", "")
-                    self.rm_ban_word(message, word.lower())
-            else:
-                self.bot.reply_to(message, NOTADMIN)
+                self.bot.reply_to(message,PRIVATECHAT)
+        except Exception:
+            print(Exception)
+
     def ban_word(self, message, word):
         bannedword=BannedWords(message.id,message.chat.id,word,None)
         resp = self.insert_ban_word(bannedword)
@@ -130,3 +140,10 @@ class Mod_BannedWord(Mod_Base):
                         self.bot.delete_message(message.chat.id,message.id)
             except:
                 pass
+
+    def help_mod(self):
+        help = f"Help of BannedWord\n"+\
+            f"/bword - Ban word in the group!\n"+\
+                f"/listbword - List banned words in the group\n"+\
+               f"/dbword - delete the banned word from the list"
+        return help
