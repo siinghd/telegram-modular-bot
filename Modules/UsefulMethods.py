@@ -1,6 +1,8 @@
 from DatabaseManager.DatabaseOperation import DatabaseOperation
-
-
+import soundfile as sf
+from pydub import AudioSegment
+import speech_recognition as sr
+import os
 NOTADMIN = "Puff , you are not an admin! get some powers :)"
 BOTNOTADMIN = "Puff , I'm not a admin! give me some power to do this! :("
 PRIVATECHAT ="Command not avaible in private chat!"
@@ -58,4 +60,45 @@ def isPrivateChat(message):
         return False
     else:
         return True
+
+def toText(bot,fileId,r):
+    info = {}
+    try:
+        file_info = bot.get_file(fileId)
+        downloaded_file = bot.download_file(file_info.file_path)
+        nameF = file_info.file_unique_id
+        nameFogg = nameF + ".ogg"
+        with open(nameFogg, 'wb') as new_file:
+            new_file.write(downloaded_file)
+        file_ogg = AudioSegment.from_ogg(nameFogg)
+        filewav = nameF + ".wav"
+        file_handle = file_ogg.export(filewav, format="wav")
+        nameFwav = nameF + ".wav"
+        audio = sr.AudioFile(nameFwav)
+        with audio as source:
+            r.adjust_for_ambient_noise(source, duration=0.5)
+            audio = r.record(source)
+
+            res = r.recognize_google(audio ,language="en-IN",show_all=True)
+
+        if len(res) == 0:
+            info["status"] = "failed"
+            info["message"] = "Check the audio, probably no clear speech found!"
+        else:
+            stringTosend = "<b>Here is possible text:</b>\n"
+            stringTosend = stringTosend + f"""⚫ {res['alternative'][0]['transcript']}\n"""
+            info["status"] = "success"
+            info["message"] = stringTosend
+
+        if os.path.exists(nameFwav):
+            os.remove(nameFwav)
+        if os.path.exists(nameFogg):
+            os.remove(nameFogg)
+        return info
+
+    except Exception as e:
+        print(e)
+        info["status"] = "failed"
+        info["message"] = "Problem in convertion!"
+        return info
 

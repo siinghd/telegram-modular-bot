@@ -19,8 +19,7 @@ import speech_recognition as sr
 import os
 from gtts import gTTS
 import requests
-import soundfile as sf
-from pydub import AudioSegment
+from Modules import UsefulMethods
 class MessageManager:
     userstep = []
     userData = [None, None, None]
@@ -353,37 +352,9 @@ class MessageManager:
         if message.reply_to_message==None or message.reply_to_message.voice==None:
             bot.reply_to(message,"Please include a reply voice reply!")
         else:
-            try:
-                file_info = bot.get_file(message.reply_to_message.voice.file_id)
-                downloaded_file = bot.download_file(file_info.file_path)
-                nameF=file_info.file_unique_id
-                nameFogg=nameF+".ogg"
-                with open(nameFogg, 'wb') as new_file:
-                    new_file.write(downloaded_file)
-                file_ogg = AudioSegment.from_ogg(nameFogg)
-                filewav = nameF+".wav"
-                file_handle = file_ogg.export(filewav, format="wav")
-                nameFwav = nameF + ".wav"
-                audio = sr.AudioFile(nameFwav)
-                with audio as source:
-                    self.r.adjust_for_ambient_noise(source, duration=0.5)
-                    audio = self.r.record(source)
-                    res = self.r.recognize_google(audio, language="en-IN",show_all=True)
+            resp = UsefulMethods.toText(bot,message.reply_to_message.voice.file_id,self.r)
+            bot.reply_to(message,resp["message"])
 
-                if len(res) ==0:
-                    bot.send_message(message.chat.id, "Check the audio, probably no clear speech found!")
-                else:
-                    stringTosend="<b>Here is possible text:</b>\n"
-
-                    stringTosend= stringTosend+f"""⚫ {res['alternative'][0]['transcript']}\n"""
-                    bot.send_message(message.chat.id,stringTosend)
-                if os.path.exists(nameFwav):
-                    os.remove(nameFwav)
-                if os.path.exists(nameFogg):
-                    os.remove(nameFogg)
-
-            except:
-                bot.send_message(message.chat.id, "Problem in convertion!")
 
     def send_toSpeech(self, message, bot,lang):
         if message.reply_to_message==None or message.reply_to_message.text==None:

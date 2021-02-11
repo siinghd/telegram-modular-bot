@@ -134,9 +134,9 @@ def startMain():
 
 
     # Handles all sent documents and audio files
-    @bot.message_handler(content_types=['audio'])
+    @bot.message_handler(content_types=['voice'])
     def handle_docs_audio(message):
-        pass
+        ModuleCommandChecker.checkCommand(message)
 
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):

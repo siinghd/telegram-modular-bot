@@ -12,9 +12,10 @@ def checkCommand(message):
             pass
         # Method does not exist; What now?
         for name in instance.mod_commands:
-            if name in message.text or name + "@szBrokenBot" in message.text:
-                instance.handleOnCommand(message, name)
-                break
+            if message.content_type=="text":
+                if name in message.text or name + "@szBrokenBot" in message.text:
+                    instance.handleOnCommand(message, name)
+                    break
 
 def checkCallback(call):
     for instance in loadModules.moduleInstaces:

@@ -1,7 +1,9 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.BannedWords import BannedWords
-from Modules.UsefulMethods import getUserIdArray ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN
+from Modules.UsefulMethods import PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN,toText
+import speech_recognition as sr
 class Mod_BannedWord(Mod_Base):
+    r = sr.Recognizer()
     def __init__(self):
         super(Mod_BannedWord, self).__init__("BannedWord",["/bword","/listbword","/dbword"],
                                        [])
@@ -132,12 +134,20 @@ class Mod_BannedWord(Mod_Base):
 
     def getEveryMessageMethod(self,message):
         words = self.getBannedWordsArrayByGroup(message.chat.id)
+        messageToCheck=""
         if len(words)>0:
             try:
-                for word in words:
-                    if word.lower() in message.text.lower():
+                if message.content_type == "text":
+                    messageToCheck = message.text.lower()
+                else:
+                    resp = toText(self.bot,message.voice.file_id,self.r)
+                    if resp["status"]=="success":
+                        messageToCheck=resp["message"]
 
-                        self.bot.delete_message(message.chat.id,message.id)
+                if len(messageToCheck)>0:
+                    for word in words:
+                        if word.lower() in messageToCheck:
+                            self.bot.delete_message(message.chat.id, message.id)
             except:
                 pass
 

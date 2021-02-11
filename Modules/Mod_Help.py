@@ -12,7 +12,7 @@ class Mod_Help(Mod_Base):
                                              ["Help","_Help_Back"])
 
     def handleOnCommand(self, message, name):
-        # try:
+        try:
             if name == "/help":
                 msgHelp = "<b>Time</b> - /time City name\n" + \
                           "<b>Weather</b> - /weather City name\n" + \
@@ -27,8 +27,8 @@ class Mod_Help(Mod_Base):
                           "<b>Modify photo</b> - /modifyphoto Modify your photo to disney style\n"
                 self.bot.reply_to(message, msgHelp)
                 self.sendHelpMessage(message)
-        # except Exception:
-        #     print(Exception)
+        except Exception:
+            print(Exception)
 
     def sendHelpMessage(self, message):
 
