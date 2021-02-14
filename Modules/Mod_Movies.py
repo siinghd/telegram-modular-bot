@@ -2,7 +2,7 @@ from telebot import types
 
 from Modules.Base import Mod_Base
 from Modules.ClassHelpers.Movies import Movies
-from Modules.UsefulMethods import getmessageInCommand,WORNGMSG
+from Modules.UsefulMethods import getmessageInCommand,WORNGMSG, isOwner ,NOOWNER
 class Mod_Movies(Mod_Base):
     user_step=[]
     def __init__(self):
@@ -11,32 +11,39 @@ class Mod_Movies(Mod_Base):
 
     def handleOnCommand(self,message,name):
         try:
+
             if name == "/_addmovie":
-                textMessageParams = getmessageInCommand(message,"/_addmovie",",")
-                if len(textMessageParams)>0:
-                    movie = Movies(message.id,textMessageParams[0].lower(),textMessageParams[1],None)
-                    resp = self.insert_movie(movie)
-                    if resp == "ok":
-                        self.bot.reply_to(message, "Done, movie added")
+                if isOwner(message):
+                    textMessageParams = getmessageInCommand(message,"/_addmovie",",")
+                    if len(textMessageParams)>0:
+                        movie = Movies(message.id,textMessageParams[0].lower(),textMessageParams[1],None)
+                        resp = self.insert_movie(movie)
+                        if resp == "ok":
+                            self.bot.reply_to(message, "Done, movie added")
+                        else:
+                            self.bot.reply_to(message, resp)
                     else:
-                        self.bot.reply_to(message, resp)
+                        self.bot.reply_to(message, "Pass arguments")
                 else:
-                    self.bot.reply_to(message, "Pass arguments")
+                    self.bot.reply_to(message, NOOWNER)
 
             elif name =="/_dmovie":
-                movieName= getmessageInCommand(message, "/_dmovie", None)
-                if len(movieName)>0:
-                    array_Matching_films = self.get_Movies(movieName.lower(),"NAME")
-                    if isinstance(array_Matching_films, str):
-                        self.bot.reply_to(array_Matching_films)
-                    else:
-                        if len(array_Matching_films)==0:
-                            self.bot.reply_to("No Movie found!")
+                if isOwner(message):
+                    movieName= getmessageInCommand(message, "/_dmovie", None)
+                    if len(movieName)>0:
+                        array_Matching_films = self.get_Movies(movieName.lower(),"NAME")
+                        if isinstance(array_Matching_films, str):
+                            self.bot.reply_to(array_Matching_films)
                         else:
-                            self.send_Search(message,array_Matching_films,"Delete movie")
+                            if len(array_Matching_films)==0:
+                                self.bot.reply_to("No Movie found!")
+                            else:
+                                self.send_Search(message,array_Matching_films,"Delete movie")
 
+                    else:
+                        self.bot.reply_to(message, "Pass arguments")
                 else:
-                    self.bot.reply_to(message, "Pass arguments")
+                    self.bot.reply_to(message, NOOWNER)
             elif name =="/getmovie":
                 movieName= getmessageInCommand(message, "/getmovie", None)
                 if len(movieName)>0:

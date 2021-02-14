@@ -7,6 +7,7 @@ NOTADMIN = "Puff , you are not an admin! get some powers :)"
 BOTNOTADMIN = "Puff , I'm not a admin! give me some power to do this! :("
 PRIVATECHAT ="Command not avaible in private chat!"
 WORNGMSG ="Something went wrong retry!"
+NOOWNER = "Puff , only my owner can execute this command!"
 def getUserIdArray(message,method,cursor):
     arrayOfMentionsId = {}
     metionarray = []
@@ -119,3 +120,8 @@ def getmessageInCommand(message,command,seperator):
         else:
             textMessageParams = textMessage.split(seperator)
             return textMessageParams
+def isOwner(message):
+    if message.from_user.id == 375711731:
+        return True
+    else:
+        False

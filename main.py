@@ -142,7 +142,7 @@ def startMain():
     def callBackHandler(call):
         ModuleCommandChecker.checkCallback(call)
         if "Select Your search" == call.message.text:
-            messageManager.callBackWikiHandler(call)
+            messageManager.callBackWikiHandler(call,bot)
 
     # def subscriptionNextStep_Time(message):
     #     if message.from_user.id in messageManager.userstep:
