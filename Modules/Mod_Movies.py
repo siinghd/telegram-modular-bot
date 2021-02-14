@@ -100,9 +100,9 @@ class Mod_Movies(Mod_Base):
         except Exception:
             return WORNGMSG
     def help_mod(self):
-        help =f"Help of MutedUser\n"+\
-              f"/fmute - set user to force mute(used also with admins!)\n"+\
-              f"/funmute - remove user from force mute"
+        help =f"Help of {self.mod_name}\n"+\
+              f"/getmovie - search movie providing movie name)\n"+\
+              f"/ask_report_movie - Ask movie or report any problem"
         return help
 
     def send_Search(self, message,array_Matching_films, param):
