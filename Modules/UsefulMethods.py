@@ -6,6 +6,7 @@ import os
 NOTADMIN = "Puff , you are not an admin! get some powers :)"
 BOTNOTADMIN = "Puff , I'm not a admin! give me some power to do this! :("
 PRIVATECHAT ="Command not avaible in private chat!"
+WORNGMSG ="Something went wrong retry!"
 def getUserIdArray(message,method,cursor):
     arrayOfMentionsId = {}
     metionarray = []
@@ -102,3 +103,19 @@ def toText(bot,fileId,r):
         info["message"] = "Problem in convertion!"
         return info
 
+def getmessageInCommand(message,command,seperator):
+    textMessage = message.text
+    if command+"@szBrokenBot" in textMessage:
+        textMessage = textMessage[textMessage.index(command+"@szBrokenBot") + len(command+"@szBrokenBot"):]
+    else:
+        textMessage = textMessage[textMessage.index(command) + len(command):]
+
+    textMessage = textMessage.strip()
+    if len(textMessage)==0:
+         return  ""
+    else:
+        if seperator is None:
+            return  textMessage
+        else:
+            textMessageParams = textMessage.split(seperator)
+            return textMessageParams

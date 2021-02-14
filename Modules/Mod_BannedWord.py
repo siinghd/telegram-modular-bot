@@ -75,12 +75,12 @@ class Mod_BannedWord(Mod_Base):
     def insert_ban_word(self,bannedword):
         try:
             self.cursor.execute(f"""Select id from bannedwords where word='{bannedword._word}' AND groupid={bannedword._groupid}""")
-            item = self.cursor.fetchall();
+            item = self.cursor.fetchall()
             if len(item)==0:
                 self.cursor.execute(f"INSERT INTO bannedwords VALUES ({bannedword._id},'{bannedword._word}','{bannedword._created_At}',{bannedword._groupid})")
 
             return "ok"
-        except Exception:
+        except Exception as e:
             return "Something went wrong retry!"
     def getBannedWordsArrayByGroup(self,id):
         try:
@@ -145,9 +145,12 @@ class Mod_BannedWord(Mod_Base):
                         messageToCheck=resp["message"]
 
                 if len(messageToCheck)>0:
-                    for word in words:
-                        if word.lower() in messageToCheck:
-                            self.bot.delete_message(message.chat.id, message.id)
+                    if "*" in messageToCheck:
+                        self.bot.delete_message(message.chat.id, message.id)
+                    else:
+                        for word in words:
+                            if word.lower() in messageToCheck:
+                                self.bot.delete_message(message.chat.id, message.id)
             except:
                 pass
 
