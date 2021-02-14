@@ -6,17 +6,17 @@ from Modules.UsefulMethods import getmessageInCommand,WORNGMSG, isOwner ,NOOWNER
 class Mod_Movies(Mod_Base):
     user_step=[]
     def __init__(self):
-        super(Mod_Movies,self).__init__("Movies",["/_addmovie","/getmovie","/ask_report_movie","/_dmovie"],
+        super(Mod_Movies,self).__init__("Movies",["/addmovie","/getmovie","/ask_report_movie","/dmovie"],
                                         ["Select you search", "Delete movie"])
 
     def handleOnCommand(self,message,name):
         try:
 
-            if name == "/_addmovie":
+            if name == "/addmovie":
                 if isOwner(message):
-                    textMessageParams = getmessageInCommand(message,"/_addmovie",",")
+                    textMessageParams = getmessageInCommand(message,"/addmovie",",")
                     if len(textMessageParams)>0:
-                        movie = Movies(message.id,textMessageParams[0].lower(),textMessageParams[1],None)
+                        movie = Movies(message.id,textMessageParams[0].lower().strip(),textMessageParams[1].strip(),None)
                         resp = self.insert_movie(movie)
                         if resp == "ok":
                             self.bot.reply_to(message, "Done, movie added")
@@ -27,9 +27,9 @@ class Mod_Movies(Mod_Base):
                 else:
                     self.bot.reply_to(message, NOOWNER)
 
-            elif name =="/_dmovie":
+            elif name =="/dmovie":
                 if isOwner(message):
-                    movieName= getmessageInCommand(message, "/_dmovie", None)
+                    movieName= getmessageInCommand(message, "/dmovie", None)
                     if len(movieName)>0:
                         array_Matching_films = self.get_Movies(movieName.lower(),"NAME")
                         if isinstance(array_Matching_films, str):
