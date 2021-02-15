@@ -40,7 +40,7 @@ class Mod_NSFW(Mod_Base):
 
     def getEveryMessageMethod(self,message):
         try:
-            if message.content_type == 'photo':
+            if message.content_type == 'photo' :
                 resp = self.get_NsfwStatus(message.chat.id)
                 if not isinstance(resp,str):
                     if len(resp)>0:
@@ -55,22 +55,28 @@ class Mod_NSFW(Mod_Base):
                             url =  self.bot.get_file_url(message.photo[3].file_id)
                         elif len(message.photo) == 5:
                             url =  self.bot.get_file_url(message.photo[4].file_id)
-                        r = requests.post(
-                            "https://api.deepai.org/api/nsfw-detector",
-                            data={
-                                'image': url,
-                            },
-                            headers={'api-key': '282bb452-77d1-4561-a7d2-d750058fffd6'}
-                        )
-                        response = r.text
-                        dictionary = json.loads(response)
-                        if dictionary["output"]["nsfw_score"] >0.65:
-                            self.bot.send_message(message.chat.id,
-                                                  f"Deleting last image from : {message.from_user.first_name}! NSFW Content detected!")
-                            self.bot.delete_message(message.chat.id,message.id)
+
+                        self.send_nsfw_message(message,url)
+
         except:
             pass
-
+    def send_nsfw_message(self,message,url):
+        try:
+            r = requests.post(
+                "https://api.deepai.org/api/nsfw-detector",
+                data={
+                    'image': url,
+                },
+                headers={'api-key': '282bb452-77d1-4561-a7d2-d750058fffd6'}
+            )
+            response = r.text
+            dictionary = json.loads(response)
+            if dictionary["output"]["nsfw_score"] > 0.65:
+                self.bot.send_message(message.chat.id,
+                                      f"Deleting last image from : {message.from_user.first_name}! NSFW Content detected!")
+                self.bot.delete_message(message.chat.id, message.id)
+        except:
+            pass
     def insert_nsfw_status(self,id):
         try:
             self.cursor.execute(f"""Select * from nsfw WHERE id={id}""")

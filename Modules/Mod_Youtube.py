@@ -49,6 +49,7 @@ class Mod_Youtube(Mod_Base):
                 try:
                     self.bot.send_audio(message.chat.id,f)
                 except Exception as e:
+                    self.bot.reply_to(message, WORNGMSG)
                     print(e)
                     f.close()
                     audio_clip.close()
@@ -61,17 +62,22 @@ class Mod_Youtube(Mod_Base):
                     os.remove(mp3wav)
 
             else:
-                f = open(mp4, "rb")
-                try:
-                    self.bot.send_video(message.chat.id, f)
-                except Exception as e:
-                    print(e)
+                if os.path.getsize(mp4)<52428800:
+                    f = open(mp4, "rb")
+
+                    try:
+                        self.bot.send_video(message.chat.id, f)
+                    except Exception as e:
+                        print(e)
+                        f.close()
+                        video_clip.close()
+                        if os.path.exists(mp4):
+                            os.remove(mp4)
                     f.close()
                     video_clip.close()
-                    if os.path.exists(mp4):
-                        os.remove(mp4)
-                f.close()
-                video_clip.close()
+                    self.bot.reply_to(message, WORNGMSG)
+                else:
+                    self.bot.reply_to(message,"File i bigger then 50MB :/")
             if os.path.exists(mp4):
                 os.remove(mp4)
         except Exception as e:
