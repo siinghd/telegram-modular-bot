@@ -1,12 +1,10 @@
 import json
-import time
 import random
 from telebot import types
 from datetime import datetime
 from DatabaseManager.DatabaseOperation import DatabaseOperation
 from DatabaseManager.DatabaseInitialization import DatabaseInitiaization
 from DatabaseManager.Group import Group
-from DatabaseManager.NewsSubscription import NewsSubscription
 from DatabaseManager.User import User
 from DatabaseManager.AfkStatus import AfkStatus
 from MemeManager.ImgFlip import ImgFlip
@@ -172,7 +170,7 @@ class MessageManager:
         self.userData[2] = sent.message_id
     def setAfkMessage(self, message, bot):
         bot.delete_message(message.chat.id,self.userData[2])
-        afkuser=AfkStatus(message.from_user.id,message.text,None,None)
+        afkuser=AfkStatus(message.from_user.id,message.text.replace("'",""),None,None)
         string = self.databaseOp.insertStatus(afkuser,self.cursor)
         self.conn.commit()
         if string=="ok":

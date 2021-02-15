@@ -137,6 +137,10 @@ def startMain():
     @bot.message_handler(content_types=['voice'])
     def handle_docs_audio(message):
         ModuleCommandChecker.checkCommand(message)
+    # Handles aimages
+    @bot.message_handler(content_types=['photo'])
+    def handle_image(message):
+        ModuleCommandChecker.checkCommand(message)
 
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):
