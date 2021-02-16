@@ -7,12 +7,12 @@ import ModuleCommandChecker
 class Mod_Photo(Mod_Base):
     user_step=[]
     def __init__(self):
-        super(Mod_Photo,self).__init__("Color Photo",["/colorphoto","/colorbwphoto","/modifyphoto"],
+        super(Mod_Photo,self).__init__("Color Photo",["/upscaleimage","/colorbwphoto","/modifyphoto"],
                                         [])
 
     def handleOnCommand(self,message,name):
         try:
-            if name == "/colorphoto":
+            if name == "/upscaleimage":
                 if  message.reply_to_message is not None and  message.reply_to_message.content_type=="photo":
                     self.user_step.append(message.from_user.id)
                     self.send_modified_photo(message)
@@ -144,7 +144,7 @@ class Mod_Photo(Mod_Base):
 
     def help_mod(self):
         help =f"Help of {self.mod_name}\n"+\
-              f"/colorphoto - fix  blurred photo\n"+\
+              f"/upscaleimage - upscale image without losing details\n"+\
               f"/colorphotobw - black and white photo to color\n"\
               f"/modifyphoto - modify photo to cartoony"
         return help
