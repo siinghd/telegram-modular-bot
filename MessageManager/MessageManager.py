@@ -392,48 +392,5 @@ class MessageManager:
                 break
         return isAdmin
 
-    def send_photoMsg(self, message, bot):
-        self.userstep.append(message.from_user.id)
-        bot.reply_to(message,"Please send me photo with visible face!")
-
-    def send_modified_photo(self,message,bot):
-        if message.content_type != 'photo':
-            bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
-            self.userstep.remove(message.from_user.id)
-        else:
-            self.userstep.remove(message.from_user.id)
-            if len(message.photo)==1:
-                url=bot.get_file_url(message.photo[0].file_id)
-            elif len(message.photo)==2:
-                url=bot.get_file_url(message.photo[1].file_id)
-            elif len(message.photo)==3:
-                url=bot.get_file_url(message.photo[2].file_id)
-            elif len(message.photo)==4:
-                url=bot.get_file_url(message.photo[3].file_id)
-            elif len(message.photo)==5:
-                url=bot.get_file_url(message.photo[4].file_id)
-            r = requests.post(
-                "https://api.deepai.org/api/toonify",
-                data={
-                    'image': url,
-                },
-                headers={'api-key': '282bb452-77d1-4561-a7d2-d750058fffd6'}
-            )
-            response = r.text
-            dictionary = json.loads(response)
-            if  'err' in dictionary:
-                bot.reply_to(message,f"An error occurred processing photo, please check your photo and make sure that it have visible face!")
-
-            else:
-                apiurl = dictionary['output_url']
-                saveImg= dictionary['id']+".jpg"
-                r = requests.get(apiurl, allow_redirects=True)
-                open(saveImg, 'wb').write(r.content)
-                photo = open(saveImg, 'rb')
-                bot.send_photo(message.chat.id,photo,"Here is your photo!",message.id)
-                photo.close()
-                if os.path.exists(saveImg):
-                    os.remove(saveImg)
-
 
 

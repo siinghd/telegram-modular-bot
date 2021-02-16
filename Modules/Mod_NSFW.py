@@ -1,5 +1,5 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import WORNGMSG
+from Modules.UsefulMethods import WORNGMSG ,getBotIsAdmin,BOTNOTADMIN
 import requests
 import json
 class Mod_NSFW(Mod_Base):
@@ -11,25 +11,27 @@ class Mod_NSFW(Mod_Base):
 
     def handleOnCommand(self,message,name):
         try:
-            if name == "/enable_nsfw_detection":
-                resp = self.insert_nsfw_status(message.chat.id)
-                if resp =="ok":
-                    self.bot.reply_to(message,"NSFW detection enabled")
-                else:
-                    self.bot.reply_to(message, resp)
-            if name =="/disable_nsfw_detection":
-                resp = self.delete_nsfw_status(message.chat.id)
-                self.bot.reply_to(message,resp)
-            if name=="/show_nsfw_detection_status":
-                resp = self.get_NsfwStatus(message.chat.id)
-                if isinstance(resp,str):
-                    self.bot.reply_to(message,WORNGMSG)
-                else:
-                    if len(resp)>0:
+            if getBotIsAdmin(self.bot, message):
+                if name == "/enable_nsfw_detection":
+                    resp = self.insert_nsfw_status(message.chat.id)
+                    if resp =="ok":
                         self.bot.reply_to(message,"NSFW detection enabled")
                     else:
-                        self.bot.reply_to(message, "NSFW detection disbaled")
-
+                        self.bot.reply_to(message, resp)
+                if name =="/disable_nsfw_detection":
+                    resp = self.delete_nsfw_status(message.chat.id)
+                    self.bot.reply_to(message,resp)
+                if name=="/show_nsfw_detection_status":
+                    resp = self.get_NsfwStatus(message.chat.id)
+                    if isinstance(resp,str):
+                        self.bot.reply_to(message,WORNGMSG)
+                    else:
+                        if len(resp)>0:
+                            self.bot.reply_to(message,"NSFW detection enabled")
+                        else:
+                            self.bot.reply_to(message, "NSFW detection disbaled")
+            else:
+                self.bot.reply_to(message, BOTNOTADMIN)
 
 
 
@@ -40,32 +42,35 @@ class Mod_NSFW(Mod_Base):
 
     def getEveryMessageMethod(self,message):
         try:
-            if message.content_type == 'photo' :
+            if message.content_type == 'photo' or message.content_type == 'animation':
                 resp = self.get_NsfwStatus(message.chat.id)
                 if not isinstance(resp,str):
                     if len(resp)>0:
+                        if message.content_type == 'photo':
+                            if len(message.photo) == 1:
+                                url = self.bot.get_file_url(message.photo[0].file_id)
+                            elif len(message.photo) == 2:
+                                url =  self.bot.get_file_url(message.photo[1].file_id)
+                            elif len(message.photo) == 3:
+                                url =  self.bot.get_file_url(message.photo[2].file_id)
+                            elif len(message.photo) == 4:
+                                url =  self.bot.get_file_url(message.photo[3].file_id)
+                            elif len(message.photo) == 5:
+                                url =  self.bot.get_file_url(message.photo[4].file_id)
 
-                        if len(message.photo) == 1:
-                            url = self.bot.get_file_url(message.photo[0].file_id)
-                        elif len(message.photo) == 2:
-                            url =  self.bot.get_file_url(message.photo[1].file_id)
-                        elif len(message.photo) == 3:
-                            url =  self.bot.get_file_url(message.photo[2].file_id)
-                        elif len(message.photo) == 4:
-                            url =  self.bot.get_file_url(message.photo[3].file_id)
-                        elif len(message.photo) == 5:
-                            url =  self.bot.get_file_url(message.photo[4].file_id)
-
-                        self.send_nsfw_message(message,url)
+                            self.send_nsfw_message(message,'image',url)
+                        else:
+                            url = self.bot.get_file_url(message.animation.file_id)
+                            self.send_nsfw_message(message,'video' ,url)
 
         except:
             pass
-    def send_nsfw_message(self,message,url):
+    def send_nsfw_message(self,message,type,url):
         try:
             r = requests.post(
                 "https://api.deepai.org/api/nsfw-detector",
                 data={
-                    'image': url,
+                    type: url,
                 },
                 headers={'api-key': '282bb452-77d1-4561-a7d2-d750058fffd6'}
             )

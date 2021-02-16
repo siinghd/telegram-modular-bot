@@ -12,7 +12,7 @@ def startMain():
 
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
-                                   'totext','tospeech','chatinfo','modifyphoto'])
+                                   'totext','tospeech','chatinfo'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -115,9 +115,7 @@ def startMain():
                 bot.reply_to(message, "Please type the language\n/tospeech language")
             else:
                 messageManager.send_toSpeech( message, bot, language)
-        elif "/modifyphoto" == message.text.lower() or "/modifyphoto@szbrokenbot" == message.text.lower():
-            messageManager.send_photoMsg(message, bot)
-            bot.register_next_step_handler_by_chat_id(message.chat.id,photNextStepToonify)
+
 
 
 
@@ -141,6 +139,10 @@ def startMain():
     @bot.message_handler(content_types=['photo'])
     def handle_image(message):
         ModuleCommandChecker.checkCommand(message)
+    # Handles aimages
+    # @bot.message_handler(content_types=['animation'])
+    # def handle_image_animation(message):
+    #     ModuleCommandChecker.checkCommand(message)
 
     @bot.callback_query_handler(func=lambda message: True)
     def callBackHandler(call):
@@ -162,14 +164,6 @@ def startMain():
             if message.content_type == 'text':
                 check_commands(message)
             bot.register_next_step_handler_by_chat_id(message.chat.id, afkNextStep_Message)
-
-    def photNextStepToonify(message):
-        if message.from_user.id in messageManager.userstep:
-            messageManager.send_modified_photo(message, bot)
-        else:
-            if message.content_type == 'text':
-                check_commands(message)
-            bot.register_next_step_handler_by_chat_id(message.chat.id, photNextStepToonify)
 
 
     bot.polling()
