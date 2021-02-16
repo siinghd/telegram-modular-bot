@@ -213,8 +213,8 @@ class Mod_News(Mod_Base):
                 time.sleep(60)
 
     def help_mod(self):
-        help = f"Help of News"+\
+        help_string = f"Help of News"+\
             "<b>Subscribenews</b> - /subscribenews to daily news update\n"+ \
                       "<b>UnSubscribenews</b> - /unsubscribenews Cancel your subscriptions\n" + \
                       "<b>List news subscriptions</b> - /listnewssubscriptions list news subscriptions\n"
-        return help
+        return help_string

@@ -98,7 +98,7 @@ class Mod_MutedUser(Mod_Base):
 
 
     def help_mod(self):
-        help =f"Help of MutedUser\n"+\
+        help_string =f"Help of MutedUser\n"+\
               f"/fmute - set user to force mute(used also with admins!)\n"+\
               f"/funmute - remove user from force mute"
-        return help
+        return help_string

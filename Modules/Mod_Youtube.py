@@ -92,8 +92,8 @@ class Mod_Youtube(Mod_Base):
             else:
                 pass
     def help_mod(self):
-        help =f"Help of {self.mod_name}\n"+\
+        help_string =f"Help of {self.mod_name}\n"+\
               f"/tomp3 - convert youtube video to mp3\n"+\
               f"/towav - convert youtube video to wav\n"\
               f"/tomp4 - convert youtube video to mp4"
-        return help
+        return help_string

@@ -107,10 +107,10 @@ class Mod_Movies(Mod_Base):
         except Exception:
             return WORNGMSG
     def help_mod(self):
-        help =f"Help of {self.mod_name}\n"+\
+        help_string =f"Help of {self.mod_name}\n"+\
               f"/getmovie - search movie providing movie name)\n"+\
               f"/ask_report_movie - Ask movie or report any problem"
-        return help
+        return help_string
 
     def send_Search(self, message,array_Matching_films, param):
         self.user_step.append(message.from_user.id)

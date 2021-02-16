@@ -7,7 +7,7 @@ import ModuleCommandChecker
 class Mod_Photo(Mod_Base):
     user_step=[]
     def __init__(self):
-        super(Mod_Photo,self).__init__("Color Photo",["/upscaleimage","/colorbwphoto","/modifyphoto"],
+        super(Mod_Photo,self).__init__("ColorPhoto",["/upscaleimage","/colorbwphoto","/modifyphoto"],
                                         [])
 
     def handleOnCommand(self,message,name):
@@ -143,9 +143,11 @@ class Mod_Photo(Mod_Base):
                     os.remove(saveImg)
         except Exception as e:
             print(e)
+
     def help_mod(self):
-        help =f"Help of {self.mod_name}\n"+\
+        help_string =f"Help of {self.mod_name}\n"+\
               f"/upscaleimage - upscale image without losing details\n"+\
-              f"/colorphotobw - black and white photo to color\n"+\
+              f"/colorbwphoto - black and white photo to color\n"+\
               f"/modifyphoto - modify photo to cartoony"
-        return help
+
+        return help_string
