@@ -116,6 +116,6 @@ class Mod_NSFW(Mod_Base):
     def help_mod(self):
         help =f"Help of {self.mod_name}\n"+\
               f"/enable_nsfw_detection - enable nsfw detection\n"+\
-              f"/disable_nsfw_detection - disbale nsfw detection\n"\
+              f"/disable_nsfw_detection - disbale nsfw detection\n"+\
               f"/show_nsfw_detection_status - get if your server nsfw status"
         return help

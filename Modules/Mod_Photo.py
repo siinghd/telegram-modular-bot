@@ -1,5 +1,5 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import WORNGMSG ,getBotIsAdmin,BOTNOTADMIN
+from Modules.UsefulMethods import WORNGMSG ,tryTosendMsg,getBotIsAdmin,BOTNOTADMIN
 import requests
 import json
 import os
@@ -40,7 +40,7 @@ class Mod_Photo(Mod_Base):
 
     def send_photoMsg(self, message,msg,method):
         self.user_step.append(message.from_user.id)
-        self.bot.reply_to(message,msg)
+        tryTosendMsg(message,msg,self.bot)
         self.bot.register_next_step_handler_by_chat_id(message.chat.id, method)
 
     def send_modified_photo(self,message):
@@ -48,7 +48,7 @@ class Mod_Photo(Mod_Base):
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
                 if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
-                        self.bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
+                    tryTosendMsg(message, "Message sent isn't a photo , cancelling photo modification command!", self.bot)
                 else:
                     self.send_photo_message(message,'image',"https://api.deepai.org/api/torch-srgan",self.getImageUrl(message))
             else:
@@ -63,7 +63,9 @@ class Mod_Photo(Mod_Base):
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
                 if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
-                        self.bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
+                    tryTosendMsg(message, "Message sent isn't a photo , cancelling photo modification command!",
+                                 self.bot)
+
                 else:
                     self.send_photo_message(message,'image',"https://api.deepai.org/api/toonify",self.getImageUrl(message))
             else:
@@ -79,7 +81,9 @@ class Mod_Photo(Mod_Base):
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
                 if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
-                        self.bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
+                    tryTosendMsg(message, "Message sent isn't a photo , cancelling photo modification command!",
+                                 self.bot)
+
                 else:
                     self.send_photo_message(message,'image',"https://api.deepai.org/api/colorizer",self.getImageUrl(message))
             else:
@@ -126,9 +130,7 @@ class Mod_Photo(Mod_Base):
             response = r.text
             dictionary = json.loads(response)
             if 'err' in dictionary:
-                self.bot.reply_to(message,
-                                  f"An error occurred processing photo")
-
+                tryTosendMsg(message,  f"An error occurred processing photo", self.bot)
             else:
                 apiurl = dictionary['output_url']
                 saveImg = dictionary['id'] + ".jpg"
@@ -141,10 +143,9 @@ class Mod_Photo(Mod_Base):
                     os.remove(saveImg)
         except Exception as e:
             print(e)
-
     def help_mod(self):
         help =f"Help of {self.mod_name}\n"+\
               f"/upscaleimage - upscale image without losing details\n"+\
-              f"/colorphotobw - black and white photo to color\n"\
+              f"/colorphotobw - black and white photo to color\n"+\
               f"/modifyphoto - modify photo to cartoony"
         return help
