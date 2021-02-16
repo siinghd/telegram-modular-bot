@@ -7,25 +7,25 @@ import ModuleCommandChecker
 class Mod_Photo(Mod_Base):
     user_step=[]
     def __init__(self):
-        super(Mod_Photo,self).__init__("Color Photo",["/colorphoto","/colorphotobw","/modifyphoto"],
+        super(Mod_Photo,self).__init__("Color Photo",["/colorphoto","/colorbwphoto","/modifyphoto"],
                                         [])
 
     def handleOnCommand(self,message,name):
         try:
             if name == "/colorphoto":
-                if message.reply_to_message.content_type=="photo":
+                if  message.reply_to_message is not None and  message.reply_to_message.content_type=="photo":
                     self.user_step.append(message.from_user.id)
                     self.send_modified_photo(message)
                 else:
                     self.send_photoMsg(message,"Please send me photo",self.send_modified_photo)
             elif name=="/modifyphoto":
-                if message.reply_to_message.content_type=="photo":
+                if message.reply_to_message is not None and message.reply_to_message.content_type=="photo":
                     self.user_step.append(message.from_user.id)
-                    self.send_modified_photo(message)
+                    self.send_photoToonify(message)
                 else:
                     self.send_photoMsg(message, "Please send me photo with visible face!", self.send_photoToonify)
-            elif name=="/colorphotobw":
-                if message.reply_to_message.content_type == "photo":
+            elif name=="/colorbwphoto":
+                if message.reply_to_message is not None and message.reply_to_message.content_type == "photo":
                     self.user_step.append(message.from_user.id)
                     self.send_photobw(message)
                 else:
@@ -47,7 +47,7 @@ class Mod_Photo(Mod_Base):
         try:
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
-                if message.reply_to_message.content_type != 'photo' and message.content_type != 'photo':
+                if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
                         self.bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
                 else:
                     self.send_photo_message(message,'image',"https://api.deepai.org/api/torch-srgan",self.getImageUrl(message))
@@ -62,7 +62,7 @@ class Mod_Photo(Mod_Base):
         try:
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
-                if message.reply_to_message.content_type != 'photo' and message.content_type != 'photo':
+                if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
                         self.bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
                 else:
                     self.send_photo_message(message,'image',"https://api.deepai.org/api/toonify",self.getImageUrl(message))
@@ -75,9 +75,10 @@ class Mod_Photo(Mod_Base):
             print(e)
     def send_photobw(self,message):
         try:
+
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
-                if message.reply_to_message.content_type != 'photo' and message.content_type != 'photo':
+                if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
                         self.bot.reply_to(message,"Message sent isn't a photo , cancelling photo modification command!")
                 else:
                     self.send_photo_message(message,'image',"https://api.deepai.org/api/colorizer",self.getImageUrl(message))
