@@ -1,13 +1,17 @@
-from Modules.Base import Mod_Base
-from Modules.UsefulMethods import WORNGMSG ,tryTosendMsg,getBotIsAdmin,BOTNOTADMIN
-import requests
 import json
 import os
+
+import requests
+
 import ModuleCommandChecker
+from Modules.Base import Mod_Base
+from Modules.UsefulMethods import WORNGMSG, tryTosendMsg
+
+
 class Mod_Photo(Mod_Base):
     user_step=[]
     def __init__(self):
-        super(Mod_Photo,self).__init__("ColorPhoto",["/upscaleimage","/colorbwphoto","/modifyphoto"],
+        super(Mod_Photo,self).__init__("Photo",["/upscaleimage","/colorbwphoto","/modifyphoto"],
                                         [])
 
     def handleOnCommand(self,message,name):
