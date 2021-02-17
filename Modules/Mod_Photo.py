@@ -19,7 +19,7 @@ class Mod_Photo(Mod_Base):
             if name == "/upscaleimage":
                 if  message.reply_to_message is not None and  message.reply_to_message.content_type=="photo":
                     self.user_step.append(message.from_user.id)
-                    self.send_modified_photo(message) 
+                    self.send_modified_photo(message)
                 else:
                     self.send_photoMsg(message,"Please send me photo",self.send_modified_photo)
             # if name == "/aboutimage":
