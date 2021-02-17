@@ -142,7 +142,7 @@ class Mod_BannedWord(Mod_Base):
                 else:
                     resp = toText(self.bot,message.voice.file_id,self.r)
                     if resp["status"]=="success":
-                        messageToCheck=resp["message"]
+                        messageToCheck=resp["message"].lower()
 
                 if len(messageToCheck)>0:
                     if "*" in messageToCheck:
