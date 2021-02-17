@@ -16,3 +16,4 @@ gTTS==2.2.2
 pytube==10.4.1
 moviepy==1.0.3
 bounding-box==0.1.3
+opencv-python==4.5.1.48
