@@ -124,7 +124,7 @@ def isOwner(message):
     if message.from_user.id == 375711731:
         return True
     else:
-        False
+        return False
 
 def tryTosendMsg(message,send,bot):
     try:

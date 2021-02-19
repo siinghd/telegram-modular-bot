@@ -1,5 +1,5 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import isOwner,tryTosendMsg,NOOWNER
+from Modules.UsefulMethods import isOwner,tryTosend Msg,NOOWNER
 from DatabaseManager.Group import Group
 
 
@@ -12,10 +12,10 @@ class Mod_Owner(Mod_Base):
     def handleOnCommand(self, message, name):
         try:
             if isOwner(message):
-                if name == "/sendGroups":
+                if name == "/_sg":
                     self.sendGroups(message)
-                else:
-                    tryTosendMsg(message, NOOWNER, self.bot)
+            else:
+                tryTosendMsg(message, NOOWNER, self.bot)
         except Exception as e:
             print(e)
 
