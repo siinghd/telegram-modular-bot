@@ -1,5 +1,5 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import isOwner,tryTosend Msg,NOOWNER
+from Modules.UsefulMethods import isOwner,tryTosendMsg,NOOWNER
 from DatabaseManager.Group import Group
 
 
