@@ -37,6 +37,7 @@ class Mod_Help(Mod_Base):
         modNames= ModuleCommandChecker.getActiveModNames()
         try:
             modNames.remove("Mod_Help")
+            modNames.remove("Mod_Owner")
         except:
             pass
         for name in modNames:
