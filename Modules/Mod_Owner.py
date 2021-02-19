@@ -38,7 +38,7 @@ class Mod_Owner(Mod_Base):
             arrayI = []
             for i in items:
                 group = Group(i[0],i[1])
-                arrayI.append(i[group])
+                arrayI.append(group)
 
             return arrayI
         except Exception as e:

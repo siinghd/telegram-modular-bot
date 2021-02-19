@@ -174,7 +174,7 @@ class Mod_Photo(Mod_Base):
             response = r.text
             dictionary = json.loads(response)
             if 'err' in dictionary:
-                tryTosendMsg(message,  f"An error occurred processing photo, probably no face found!", self.bot)
+                tryTosendMsg(message,  f"An error occurred processing photo", self.bot)
             else:
                 if 'output_url'in dictionary:
                     apiurl = dictionary['output_url']
