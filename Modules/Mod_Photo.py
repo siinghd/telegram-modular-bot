@@ -47,7 +47,8 @@ class Mod_Photo(Mod_Base):
                 else:
                     self.send_photoMsg(message, "Please send me a text from which you want to create the image", self.send_createImage)
         except Exception as e:
-            self.bot.reply_to(message,WORNGMSG)
+            tryTosendMsg(message,WORNGMSG,self.bot)
+
 
 
 

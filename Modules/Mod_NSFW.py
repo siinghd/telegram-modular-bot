@@ -1,5 +1,5 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import WORNGMSG ,getBotIsAdmin,BOTNOTADMIN
+from Modules.UsefulMethods import WORNGMSG ,getBotIsAdmin,BOTNOTADMIN,tryTosendMsg
 import requests
 import json
 class Mod_NSFW(Mod_Base):
@@ -15,28 +15,37 @@ class Mod_NSFW(Mod_Base):
                 if name == "/enable_nsfw_detection":
                     resp = self.insert_nsfw_status(message.chat.id)
                     if resp =="ok":
-                        self.bot.reply_to(message,"NSFW detection enabled")
+                        tryTosendMsg(message,"NSFW detection enabled",self.bot)
+
                     else:
-                        self.bot.reply_to(message, resp)
+                        tryTosendMsg(message,resp,self.bot)
+
                 if name =="/disable_nsfw_detection":
                     resp = self.delete_nsfw_status(message.chat.id)
-                    self.bot.reply_to(message,resp)
+                    tryTosendMsg(message,resp,self.bot)
+
                 if name=="/show_nsfw_detection_status":
                     resp = self.get_NsfwStatus(message.chat.id)
                     if isinstance(resp,str):
-                        self.bot.reply_to(message,WORNGMSG)
+                        tryTosendMsg(message,WORNGMSG,self.bot)
+
                     else:
                         if len(resp)>0:
-                            self.bot.reply_to(message,"NSFW detection enabled")
+                            tryTosendMsg(message,"NSFW detection enabled",self.bot)
+
                         else:
-                            self.bot.reply_to(message, "NSFW detection disbaled")
+                            tryTosendMsg(message, "NSFW detection disbaled",self.bot)
+
             else:
-                self.bot.reply_to(message, BOTNOTADMIN)
+                tryTosendMsg(message,BOTNOTADMIN,self.bot)
+
 
 
 
         except Exception as e:
-            self.bot.reply_to(message,WORNGMSG)
+            print(e)
+            tryTosendMsg(message,WORNGMSG,self.bot)
+
 
 
 

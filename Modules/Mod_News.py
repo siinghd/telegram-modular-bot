@@ -8,7 +8,7 @@ import json
 from FeedReceiver.feedReceiver import FeedReceiver
 import random
 from telebot import types
-from Modules.UsefulMethods import getIsAdmin
+from Modules.UsefulMethods import getIsAdmin , tryTosendMsg
 import ModuleCommandChecker
 from threading import Thread
 class Mod_News(Mod_Base):
@@ -32,7 +32,7 @@ class Mod_News(Mod_Base):
                 else:
                     country = country[country.index("/currentnews") + len("/currentnews"):]
                 if len(country) == 0:
-                    self.bot.reply_to(message, "Please type country\n/news country name")
+                    tryTosendMsg(message, "Please type country\n/news country name",self.bot)
                 else:
                     self.send_news(self.fr,message, message.chat.id, country.strip())
             elif name=="/subscribenews":
@@ -43,7 +43,8 @@ class Mod_News(Mod_Base):
                         self.bot.register_next_step_handler_by_chat_id(message.chat.id, self.subscriptionNextStep_Time)
 
                     else:
-                        self.bot.reply_to(message,"You are not admin in this group")
+                        tryTosendMsg(message, "You are not admin in this group",self.bot)
+
                 else:
                     self.send_subscriptionMessageCity(message)
                     self.bot.register_next_step_handler_by_chat_id(message.chat.id,self.subscriptionNextStep_Time)
@@ -70,7 +71,8 @@ class Mod_News(Mod_Base):
             if message is None:
                 self.bot.send_message(chatId, "<b>Here are    last 5 news</b>")
             else:
-                self.bot.reply_to(message, "<b>Here are last 5 news</b>")
+                tryTosendMsg(message,  "<b>Here are last 5 news</b>",self.bot)
+
             for x in random.sample(resp, k=5):
                 string = "\n<a href='" + x["link"] + "'><b>" + x['title'] + "</b></a>\n"
                 self.bot.send_message(chatId, string)
@@ -82,7 +84,7 @@ class Mod_News(Mod_Base):
         self.userData[0] = message.chat.id
         markup = types.ForceReply(selective=True)
         self.userstep.append(message.from_user.id)
-        sent = self.bot.reply_to(message, "Please type Country name :", reply_markup=markup)
+        sent =  self.bot.reply_to(message, "Please type Country name :", reply_markup=markup)
         self.userData[2] = sent.message_id
 
     def subscriptionNextStep_Time(self,message):
@@ -160,7 +162,8 @@ class Mod_News(Mod_Base):
         self.userstep.append(message.from_user.id)
         activeSubs = self.dbop.getNews_byGroupSubscriptions(self.cursor, message.chat.id)
         if len(activeSubs) == 0:
-            self.bot.reply_to(message, "This chat has 0 subscriptions to cancel")
+            tryTosendMsg(message, "This chat has 0 subscriptions to cancel",self.bot)
+
             return
         markup = types.InlineKeyboardMarkup()
         buttons = []
@@ -186,14 +189,16 @@ class Mod_News(Mod_Base):
     def listNewsSubscriptions(self, message):
         activeSubs = self.dbop.getNews_byGroupSubscriptions(self.cursor, message.chat.id)
         if len(activeSubs) == 0:
-            self.bot.reply_to(message, "This chat has 0 news subscriptions ")
+            tryTosendMsg(message,  "This chat has 0 news subscriptions ",self.bot)
+
             return
 
         string = "<b>Here is Your list :</b>\n"
         for activeSub in activeSubs:
             string = string + "{state} at {time}\n".format(state=activeSub._state, time=activeSub._time)
 
-        self.bot.reply_to(message, string)
+        tryTosendMsg(message, string,self.bot)
+
 
     def send_newsFrequently(self):
         for days in range(0, 365):

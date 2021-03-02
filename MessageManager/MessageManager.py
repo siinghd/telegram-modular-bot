@@ -18,6 +18,7 @@ import os
 from gtts import gTTS
 import requests
 from Modules import UsefulMethods
+from  Modules.UsefulMethods import tryTosendMsg
 class MessageManager:
     userstep = []
     userData = [None, None, None]
@@ -57,7 +58,8 @@ class MessageManager:
     def send_weather(self, weatherInfo, bot, message, location):
         try:
             weatherinfo = weatherInfo.getWeatherInfo(location, None)
-            bot.reply_to(message, weatherinfo)
+            tryTosendMsg(message,weatherinfo,bot)
+
         except Exception:
             pass
 
@@ -95,14 +97,16 @@ class MessageManager:
                 elif entity.type == "mention":
                     stringMessage = stringMessage + " " + metionarray[i]
                     i = i + 1
-            bot.reply_to(message, stringMessage)
+            tryTosendMsg(message,stringMessage,bot)
+
         except Exception:
             pass
 
     def send_time(self, weatherInfo, bot, message, location):
         try:
             weatherinfo = weatherInfo.getTime(location, None)
-            bot.reply_to(message, weatherinfo)
+            tryTosendMsg(message,weatherinfo,bot)
+
         except Exception:
             pass
 
@@ -174,15 +178,18 @@ class MessageManager:
         string = self.databaseOp.insertStatus(afkuser,self.cursor)
         self.conn.commit()
         if string=="ok":
-            bot.reply_to(message,"Your afk status has been set correctly!")
+            tryTosendMsg(message,"Your afk status has been set correctly!",bot)
+
         else:
-            bot.reply_to(message, string)
+            tryTosendMsg(message,string,bot)
+
 
     def send_afkStatus(self, message, bot):
         array = self.databaseOp.getUserStatusByID(message.from_user.id, self.cursor)
 
         if len(array)==0:
-            bot.reply_to(message,"You don't have any status set!")
+            tryTosendMsg(message,"You don't have any status set!",bot)
+
         else:
 
             for x in array:
@@ -190,12 +197,14 @@ class MessageManager:
                 dt_object = dt_object.strftime("%m/%d/%Y, %H:%M")
                 msgSend = "<b>On : {date}</b>\nYour message:\n".format(date=dt_object)+\
                           "<code>{message}</code>".format(message=x._message)
-                bot.reply_to(message,msgSend)
+                tryTosendMsg(message,msgSend,bot)
+
 
     def send_deleteMyAFK(self, message, bot):
         msg = self.databaseOp.deleteStatus(message.from_user.id, self.cursor)
         self.conn.commit()
-        bot.reply_to(message,msg)
+        tryTosendMsg(message,msg,bot)
+
 
     def checkUserIfHasStatus(self, message, bot):
         stringMentions = ""
@@ -232,7 +241,8 @@ class MessageManager:
                 messageTosend = self.addMessageToTheStringStatus(arrayOfafkstatus, messageTosend)
 
         if len(messageTosend)!=0:
-            bot.reply_to(message,messageTosend)
+            tryTosendMsg(message,messageTosend,bot)
+
 
     def addMessageToTheStringStatus(self,array,string):
         string=""
@@ -264,7 +274,8 @@ class MessageManager:
 
             bot.send_message(message.chat.id, "Select Your search", reply_markup=markup)
         except Exception:
-            bot.reply_to(message, "Something went wrong retry!")
+            tryTosendMsg(message,"Something went wrong retry!",bot)
+
 
 
 
@@ -298,18 +309,22 @@ class MessageManager:
                 for x in dic[key]:
                      msgToSend = msgToSend + f"<b>{i}</b> - <code>{x}</code>\n\n"
                      i=i+1
-            bot.reply_to(message,msgToSend)
+            tryTosendMsg(message,msgToSend,bot)
+
         except :
-            bot.reply_to(message,f"Something went wrong retry!\nProbably there is no word {word} matching!")
+            tryTosendMsg(message,f"Something went wrong retry!\nProbably there is no word {word} matching!",bot)
+
 
     def send_Meme(self, bot, message, param, param1):
         images = self.imgFlip.getMeme("https://api.imgflip.com/get_memes")
         image = random.choice(images)
         resp = self.imgFlip.generateMeme(param,param1,image['id'])
         if resp['success'] == False:
-            bot.reply_to(message,"Something went wrong retry!")
+            tryTosendMsg(message,"Something went wrong retry!",bot)
+
         else:
-            bot.reply_to(message,resp['data']['url'])
+            tryTosendMsg(message,resp['data']['url'],bot)
+
 
     def send_mssagetoGroup(self, bot, message, param, param1):
         bot.send_message(int(param),param1);
@@ -337,9 +352,11 @@ class MessageManager:
                             for sub in pod.subpods:
                                     msgtoSend=msgtoSend+f"<b>{pod.title}</b>\n\n{sub.plaintext}\n"
 
-                    bot.reply_to(message,msgtoSend)
+                    tryTosendMsg(message,msgtoSend,bot)
+
                 else:
                     pass
+                    # tryTosendMsg(message,"),bot
                     # bot.reply_to(message, "Ops something went wrong , don't ask me advanced questions! I'm in early stage :(")
             except:
                  pass
@@ -348,15 +365,18 @@ class MessageManager:
     def send_toText(self, message, bot):
 
         if message.reply_to_message==None or message.reply_to_message.voice==None:
-            bot.reply_to(message,"Please include a reply voice reply!")
+            tryTosendMsg(message,"Please include a reply voice reply!",bot)
+
         else:
             resp = UsefulMethods.toText(bot,message.reply_to_message.voice.file_id,self.r)
-            bot.reply_to(message,resp["message"])
+            tryTosendMsg(message,resp["message"],bot)
+
 
 
     def send_toSpeech(self, message, bot,lang):
         if message.reply_to_message==None or message.reply_to_message.text==None:
-            bot.reply_to(message,"Please include a reply voice reply!")
+            tryTosendMsg(message,"Please include a reply voice reply!",bot)
+
         else:
             try:
                 # Language in which you want to convert

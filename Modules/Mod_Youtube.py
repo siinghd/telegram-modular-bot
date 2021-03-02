@@ -16,24 +16,31 @@ class Mod_Youtube(Mod_Base):
             if name == "/tomp3":
                 textMessageParams = getmessageInCommand(message,"/tomp3",None)
                 if len(textMessageParams)>0 and "youtu" in textMessageParams:
-                    self.bot.reply_to(message,"Converting...")
+
+                    tryTosendMsg(message, "Converting...", self.bot)
                     self.sendFileDownloaded(message,textMessageParams,"mp3")
                 else:
-                    self.bot.reply_to(message, "Please provide youtube link.\n/tomp3 link")
+                    tryTosendMsg(message, "Please provide youtube link.\n/tomp3 link", self.bot)
+
             elif name =="/towav":
                 textMessageParams = getmessageInCommand(message, "/towav", None)
                 if len(textMessageParams) > 0 and "youtu" in textMessageParams:
-                    self.bot.reply_to(message, "Converting...")
+
+                    tryTosendMsg(message, "Converting...", self.bot)
+
                     self.sendFileDownloaded(message, textMessageParams, "wav")
                 else:
-                    self.bot.reply_to(message, "Please provide youtube link.\n/towav link")
+                    tryTosendMsg(message, "Please provide youtube link.\n/towav link", self.bot)
+
             elif name =="/tomp4":
                 textMessageParams = getmessageInCommand(message, "/tomp4", None)
                 if len(textMessageParams) > 0 and "youtu" in textMessageParams:
-                    self.bot.reply_to(message, "Converting...")
+                    tryTosendMsg(message,  "Converting...", self.bot)
+
                     self.sendFileDownloaded(message, textMessageParams, "mp4")
                 else:
-                    self.bot.reply_to(message, "Please provide youtube link.\n/tomp4 link")
+                    tryTosendMsg(message,  "Please provide youtube link.\n/tomp4 link", self.bot)
+
         except Exception as e:
             print(e)
 
@@ -49,7 +56,8 @@ class Mod_Youtube(Mod_Base):
                 try:
                     self.bot.send_audio(message.chat.id,f)
                 except Exception as e:
-                    self.bot.reply_to(message, WORNGMSG)
+                    tryTosendMsg(message, WORNGMSG, self.bot)
+
                     print(e)
                     f.close()
                     audio_clip.close()
@@ -68,7 +76,8 @@ class Mod_Youtube(Mod_Base):
                     try:
                         self.bot.send_video(message.chat.id, f)
                     except Exception as e:
-                        self.bot.reply_to(message, WORNGMSG)
+                        tryTosendMsg(message, WORNGMSG, self.bot)
+
                         print(e)
                         f.close()
                         video_clip.close()
@@ -78,12 +87,14 @@ class Mod_Youtube(Mod_Base):
                     video_clip.close()
 
                 else:
-                    self.bot.reply_to(message,"File i bigger then 50MB :/")
+                    tryTosendMsg(message,"File i bigger then 50MB :/", self.bot)
+
             if os.path.exists(mp4):
                 os.remove(mp4)
         except Exception as e:
             print(e)
-            self.bot.reply_to(message,WORNGMSG)
+            tryTosendMsg(message, WORNGMSG, self.bot)
+
     def callBackHandler(self,call,name):
         if call.from_user.id in self.user_step:
             self.user_step.remove(call.from_user.id)

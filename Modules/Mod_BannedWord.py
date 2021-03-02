@@ -19,24 +19,29 @@ class Mod_BannedWord(Mod_Base):
                             else:
                                 word = word[word.index("/bword") + len("/bword"):]
                             if len(word) == 0:
-                                self.bot.reply_to(message, "Please type the word\n/bword word")
+                                tryTosendMsg(message,"Please type the word\n/bword word",self.bot)
+
                             else:
                                 word = word.replace(" ","")
                                 self.ban_word(message,word.lower())
                         else:
-                            self.bot.reply_to(message,NOTADMIN)
+                            tryTosendMsg(message,NOTADMIN,self.bot)
+
                     elif name=="/listbword":
                         words = self.getBannedWordsByGroup(message.chat.id)
                         if isinstance(words, str):
-                            self.bot.reply_to(message,"Ops, something went wonrg,retry!")
+                            tryTosendMsg(message,"Ops, something went wonrg,retry!",self.bot)
+
                         else:
                             if len(words)>0:
                                 msgtosend=f"<b>Here is list of banned words:</b>\n"
                                 for word in words:
                                     msgtosend+=f"{word._word}\n"
-                                self.bot.reply_to(message,msgtosend)
+                                tryTosendMsg(message,msgtosend,self.bot)
+
                             else:
-                                self.bot.reply_to(message, "This group has no banned words")
+                                tryTosendMsg(message,"This group has no banned words",self.bot)
+
                     elif name == "/dbword" :
                         if getIsAdmin(self.bot,message):
                             word = message.text
@@ -45,16 +50,20 @@ class Mod_BannedWord(Mod_Base):
                             else:
                                 word = word[word.index("/dbword") + len("/dbword"):]
                             if len(word) == 0:
-                                self.bot.reply_to(message, "Please type the word\n/dbword word")
+                                tryTosendMsg(message, "Please type the word\n/dbword word",self.bot)
+
                             else:
                                 word = word.replace(" ", "")
                                 self.rm_ban_word(message, word.lower())
                         else:
-                            self.bot.reply_to(message, NOTADMIN)
+                            tryTosendMsg(message,NOTADMIN,self.bot)
+
                 else:
-                    self.bot.reply_to(message, BOTNOTADMIN)
+                    tryTosendMsg(message,BOTNOTADMIN,self.bot)
+
             else:
-                self.bot.reply_to(message,PRIVATECHAT)
+                tryTosendMsg(message,PRIVATECHAT,self.bot)
+
         except Exception:
             print(Exception)
 
@@ -62,9 +71,11 @@ class Mod_BannedWord(Mod_Base):
         bannedword=BannedWords(message.id,message.chat.id,word,None)
         resp = self.insert_ban_word(bannedword)
         if resp=="ok":
-            self.bot.reply_to(message, "Word added to banned list!")
+            tryTosendMsg(message,"Word added to banned list!",self.bot)
+
         else:
-            self.bot.reply_to(message,resp)
+            tryTosendMsg(message,resp,self.bot)
+
     def rm_ban_word(self, message, word):
 
         bannedword= BannedWords(message.id,message.chat.id,word,None)

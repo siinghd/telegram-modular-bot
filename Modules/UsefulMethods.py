@@ -128,7 +128,7 @@ def isOwner(message):
 
 def tryTosendMsg(message,send,bot):
     try:
-        bot.reply_to(message,send)
+        return bot.reply_to(message,send)
     except Exception as e:
-        bot.send_message(message.chat.id,send)
+        return bot.send_message(message.chat.id,send)
         print(e)

@@ -1,7 +1,7 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.MutedUser import MutedUser
 from DatabaseManager.DatabaseOperation import DatabaseOperation
-from Modules.UsefulMethods import getUserIdArray ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN
+from Modules.UsefulMethods import getUserIdArray,tryTosendMsg ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN
 class Mod_MutedUser(Mod_Base):
     dbop = DatabaseOperation()
 
@@ -27,9 +27,11 @@ class Mod_MutedUser(Mod_Base):
                                     self.insertMutedUser(mutedUser)
                                     self.bot.send_message(message.chat.id, f"User : {id} set to force mute!")
                             else:
-                                self.bot.reply_to(message,NOTADMIN)
+                                tryTosendMsg(message,NOTADMIN,self.bot)
+
                         else:
-                            self.bot.reply_to(message, BOTNOTADMIN)
+                            tryTosendMsg(message, BOTNOTADMIN, self.bot)
+
 
                 elif name =="/funmute":
                     if getBotIsAdmin(self.bot,message):
@@ -40,11 +42,14 @@ class Mod_MutedUser(Mod_Base):
                                 res=self.deleteMutedUser(mutedUser)
                                 self.bot.send_message(message.chat.id,res)
                         else:
-                            self.bot.reply_to(message,NOTADMIN)
+                            tryTosendMsg(message, NOTADMIN, self.bot)
+
                     else:
-                        self.bot.reply_to(message, BOTNOTADMIN)
+                        tryTosendMsg(message, BOTNOTADMIN, self.bot)
+
             else:
-                self.bot.reply_to(message, PRIVATECHAT)
+                tryTosendMsg(message, PRIVATECHAT, self.bot)
+
         except Exception:
             print(Exception)
 

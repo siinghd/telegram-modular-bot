@@ -1,7 +1,7 @@
 from Modules.Base import Mod_Base
 from telebot import types
 import ModuleCommandChecker
-from Modules.UsefulMethods import getUserIdArray, PRIVATECHAT, getIsAdmin, BOTNOTADMIN, getBotIsAdmin, isPrivateChat, \
+from Modules.UsefulMethods import getUserIdArray, tryTosendMsg,PRIVATECHAT, getIsAdmin, BOTNOTADMIN, getBotIsAdmin, isPrivateChat, \
     NOTADMIN
 
 
@@ -25,7 +25,8 @@ class Mod_Help(Mod_Base):
                           "<b>Audio to text (beta)</b> - /totext Reply to voice message\n" + \
                           "<b>Text to audio (beta)</b> - /tospeech Reply to text message\n" + \
                           "<b>Modify photo</b> - /modifyphoto Modify your photo to disney style\n"
-                self.bot.reply_to(message, msgHelp)
+                tryTosendMsg(message,msgHelp,self.bot)
+
                 self.sendHelpMessage(message)
         except Exception:
             print(Exception)

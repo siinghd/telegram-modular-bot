@@ -2,7 +2,7 @@ from telebot import types
 
 from Modules.Base import Mod_Base
 from Modules.ClassHelpers.Movies import Movies
-from Modules.UsefulMethods import getmessageInCommand,WORNGMSG, isOwner ,NOOWNER
+from Modules.UsefulMethods import getmessageInCommand,WORNGMSG, isOwner ,NOOWNER,tryTosendMsg
 class Mod_Movies(Mod_Base):
     user_step=[]
     def __init__(self):
@@ -19,13 +19,17 @@ class Mod_Movies(Mod_Base):
                         movie = Movies(message.id,textMessageParams[0].lower().strip(),textMessageParams[1].strip(),None)
                         resp = self.insert_movie(movie)
                         if resp == "ok":
-                            self.bot.reply_to(message, "Done, movie added")
+                            tryTosendMsg(message,"Done, movie added",self.bot)
+
                         else:
-                            self.bot.reply_to(message, resp)
+                            tryTosendMsg(message, resp, self.bot)
+
                     else:
-                        self.bot.reply_to(message, "Pass arguments")
+                        tryTosendMsg(message, "Pass arguments", self.bot)
+
                 else:
-                    self.bot.reply_to(message, NOOWNER)
+                    tryTosendMsg(message, NOOWNER, self.bot)
+
 
             elif name =="/dmovie":
                 if isOwner(message):
@@ -33,43 +37,52 @@ class Mod_Movies(Mod_Base):
                     if len(movieName)>0:
                         array_Matching_films = self.get_Movies(movieName.lower(),"NAME")
                         if isinstance(array_Matching_films, str):
-                            self.bot.reply_to(array_Matching_films)
+                            tryTosendMsg(message, array_Matching_films, self.bot)
+
                         else:
                             if len(array_Matching_films)==0:
-                                self.bot.reply_to("No Movie found!")
+                                tryTosendMsg(message, "No Movie found!", self.bot)
+
                             else:
                                 self.send_Search(message,array_Matching_films,"Delete movie")
 
                     else:
-                        self.bot.reply_to(message, "Pass arguments")
+                        tryTosendMsg(message, "Pass arguments", self.bot)
+
                 else:
-                    self.bot.reply_to(message, NOOWNER)
+                    tryTosendMsg(message, NOOWNER, self.bot)
+
             elif name =="/getmovie":
                 movieName= getmessageInCommand(message, "/getmovie", None)
                 if len(movieName)>0:
                     array_Matching_films = self.get_Movies(movieName.lower() ,"NAME")
                     if isinstance(array_Matching_films, str):
-                        self.bot.reply_to(message,array_Matching_films)
+                        tryTosendMsg(message, array_Matching_films, self.bot)
+
                     else:
                         if len(array_Matching_films)==0:
-                            self.bot.reply_to(message,"No Movie found!")
+                            tryTosendMsg(message, "No Movie found!", self.bot)
+
                         else:
                             self.send_Search(message,array_Matching_films,"Select you search")
 
                 else:
-                    self.bot.reply_to(message, "Please provide movie name\nExample:\n/search Avengers End game")
+                    tryTosendMsg(message, "Please provide movie name\nExample:\n/search Avengers End game", self.bot)
+
             elif name == "/ask_report_movie":
                 messageOfUser = getmessageInCommand(message, "/ask_report_movie", None)
                 if len(messageOfUser) > 0:
                     try:
                         self.bot.send_message(-1001477281571, messageOfUser)
-                        self.bot.reply_to(message, "Done ,message sent.\nCheck in some hour the same movie asked.")
+                        tryTosendMsg(message, "Done ,message sent.\nCheck in some hour the same movie asked.", self.bot)
+
                     except:
-                        self.bot.reply_to(message, WORNGMSG)
+                        tryTosendMsg(message, NOOWNER, self.bot)
+
                 else:
-                    self.bot.reply_to(message,
-                                      "Please provide a message\nExample:\n/ask_report_movie Can you add Avenger "
-                                      "end game? OR Avenger end link doesn't work can you change it?")
+                    tryTosendMsg(message, "Please provide a message\nExample:\n/ask_report_movie Can you add Avenger "
+                                      "end game? OR Avenger end link doesn't work can you change it?", self.bot)
+
         except Exception as e:
             print(e)
 
@@ -127,7 +140,8 @@ class Mod_Movies(Mod_Base):
 
             self.bot.send_message(message.chat.id, param, reply_markup=markup)
         except Exception as e :
-            self.bot.reply_to(message,WORNGMSG)
+            tryTosendMsg(message, WORNGMSG, self.bot)
+
 
     def callBackHandler(self,call,name):
         if call.from_user.id in self.user_step:
@@ -138,7 +152,8 @@ class Mod_Movies(Mod_Base):
                 if "Select you search" == name:
                     movies = self.get_Movies(call.data,"ID")
                     if isinstance(movies, str):
-                        self.bot.reply_to(call.message,movies)
+                        tryTosendMsg(call.message, movies, self.bot)
+
                         self.bot.delete_message(call.message.chat.id, call.message.id)
                     else:
                         msg_to_send =f"<b>How to download </b>: \n"\
@@ -148,14 +163,17 @@ class Mod_Movies(Mod_Base):
                                     f"If you see download button just click on it :)"\
                                     f"If you se any other things just try to figure out how to download it :)\n"\
                                     f"<a href='{movies[0].link}'>Download {movies[0].name}</a>"
-                        self.bot.reply_to(call.message,msg_to_send)
+                        tryTosendMsg(call.message, msg_to_send, self.bot)
+
                         self.bot.delete_message(call.message.chat.id, call.message.id)
                 if "Delete movie" == name:
                     movies = self.get_Movies(call.data,"ID")
                     if isinstance(movies, str):
-                        self.bot.reply_to(call.message,movies)
+                        tryTosendMsg(call.message, movies, self.bot)
+
                         self.bot.delete_message(call.message.chat.id, call.message.id)
                     else:
                         resp = self.deleteMovie(movies[0])
-                        self.bot.reply_to(call.message,resp)
+                        tryTosendMsg(call.message, resp, self.bot)
+
                         self.bot.delete_message(call.message.chat.id, call.message.id)
