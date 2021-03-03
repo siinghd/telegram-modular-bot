@@ -3,7 +3,7 @@ from moviepy.editor import *
 from pytube import YouTube
 from Modules.Base import Mod_Base
 import os
-from Modules.UsefulMethods import getmessageInCommand,WORNGMSG
+from Modules.UsefulMethods import getmessageInCommand,WORNGMSG,tryTosendMsg
 
 class Mod_Youtube(Mod_Base):
     user_step=[]
