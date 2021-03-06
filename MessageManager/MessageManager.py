@@ -335,7 +335,7 @@ class MessageManager:
                 output = self.session.think_thought(query)
                 tryTosendMsg(message,output,bot)
             except Exception as e :
-                print(e)  
+                print(e)
                 pass
 
 
