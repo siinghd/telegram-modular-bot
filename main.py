@@ -116,11 +116,12 @@ def startMain():
     def messageHandler(message):
         if "_discuss" in message.text.lower():
             messageManager.send_discussion_cheerful(message,bot)
-        else:
-            messageManager.storeUserToDatabse(message,bot)
-            messageManager.checkUserIfHasStatus(message,bot)
-            # messageManager.checkIfBotMentioned(message,bot)
-            ModuleCommandChecker.checkCommand(message)
+        elif "stud simping" in  message.text.lower():
+            messageManager.send_studMessage(message,bot)
+        messageManager.storeUserToDatabse(message,bot)
+        messageManager.checkUserIfHasStatus(message,bot)
+        # messageManager.checkIfBotMentioned(message,bot)
+        ModuleCommandChecker.checkCommand(message)
 
 
     # Handles all sent documents and audio files
