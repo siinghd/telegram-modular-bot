@@ -12,7 +12,7 @@ def startMain():
 
                                    '_getinfouser','setmeafk',"seemyafkstatus","deletemyafkstatus",
                                    'wiki','meaning','generatememe','sendmessagebyid',
-                                   'totext','tospeech','chatinfo'])
+                                   'totext','chatinfo'])
     def check_commands(message):
         if "/start" in message.text.lower():
             bot.reply_to(message, "Welcome to szBrokenHeart")
@@ -105,16 +105,8 @@ def startMain():
                     messageManager.send_mssagetoGroup(bot, message, search[0] , stringtosend)
         elif "/totext" == message.text.lower() or "/totext@szbrokenbot" == message.text.lower():
             messageManager.send_toText(message, bot)
-        elif "/tospeech" in message.text.lower():
-            language = message.text
-            if "/tospeech@szBrokenBot" in language:
-                language = language[language.index("/tospeech@szBrokenBot") + len("/tospeech@szBrokenBot"):]
-            else:
-                language = language[language.index("/tospeech") + len("/tospeech"):]
-            if len(language) == 0:
-                bot.reply_to(message, "Please type the language\n/tospeech language")
-            else:
-                messageManager.send_toSpeech( message, bot, language)
+
+
 
 
 

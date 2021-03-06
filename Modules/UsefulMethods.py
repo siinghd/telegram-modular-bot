@@ -132,3 +132,11 @@ def tryTosendMsg(message,send,bot):
     except Exception as e:
         return bot.send_message(message.chat.id,send)
         print(e)
+
+def checkIfBotMentioned( message):
+    if message.reply_to_message !=None:
+        if message.reply_to_message.from_user.id == 1496422338:
+            return  True
+    elif "@szBrokenBot" in message.text:
+        return  True
+    return False

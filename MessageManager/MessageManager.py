@@ -1,4 +1,4 @@
-import json
+
 import random
 from telebot import types
 from datetime import datetime
@@ -9,18 +9,17 @@ from DatabaseManager.User import User
 from DatabaseManager.AfkStatus import AfkStatus
 from MemeManager.ImgFlip import ImgFlip
 import wikipedia
-import wolframalpha
 from threading import Lock
 import csv
 from PyDictionary import PyDictionary
 import speech_recognition as sr
-import os
-from gtts import gTTS
-import requests
+from coffeehouse import LydiaAI
 from Modules import UsefulMethods
-from  Modules.UsefulMethods import tryTosendMsg
+from  Modules.UsefulMethods import tryTosendMsg,checkIfBotMentioned
 class MessageManager:
     userstep = []
+    lydia = LydiaAI("e09b813a47da0dd46c3710bd9b8b9c4314c90727748d64ec97094a16c2db65d4012cb947a9057ba89a414d1dfc62e8c1b78f343ed87a4f5a33268de12f31153c")
+    session = lydia.create_session("en")
     userData = [None, None, None]
     databaseOp = DatabaseOperation()
     databaseInitiaization = DatabaseInitiaization.getInstance()
@@ -29,8 +28,7 @@ class MessageManager:
     lock = Lock()
     imgFlip = ImgFlip()
     dictionary = PyDictionary()
-    app_id = 'QRH4VG-AVUXR7LKYJ'  # get your own at https://products.wolframalpha.com/api/
-    client = wolframalpha.Client(app_id)
+
     r = sr.Recognizer()
 
     def __init__(self):
@@ -330,36 +328,15 @@ class MessageManager:
         bot.send_message(int(param),param1);
 
     def checkIfBotMentioned(self, message, bot):
-        found = False
-        if message.reply_to_message !=None:
-            if message.reply_to_message.from_user.id == 1496422338:
-                found=True
-        elif "@szBrokenBot" in message.text:
-            found = True
-
+        found = checkIfBotMentioned(message)
         if found==True:
             query = message.text.replace("@szBrokenBot","")
-            msgtoSend="<b>Info</b>\n"
             try:
-                res = self.client.query(query)
-                if res.success =="true":
-                    if "solve" in query or  "Solve" in query:
-                        for pod in res.pods:
-                            for sub in pod.subpods:
-                                msgtoSend=msgtoSend+f"<b>{pod.title}</b>\n\n{sub.plaintext}\n"
-                    else:
-                        for pod in res.pods:
-                            for sub in pod.subpods:
-                                    msgtoSend=msgtoSend+f"<b>{pod.title}</b>\n\n{sub.plaintext}\n"
-
-                    tryTosendMsg(message,msgtoSend,bot)
-
-                else:
-                    pass
-                    # tryTosendMsg(message,"),bot
-                    # bot.reply_to(message, "Ops something went wrong , don't ask me advanced questions! I'm in early stage :(")
-            except:
-                 pass
+                output = self.session.think_thought(query)
+                tryTosendMsg(message,output,bot)
+            except Exception as e :
+                print(e)  
+                pass
 
 
     def send_toText(self, message, bot):
@@ -373,36 +350,7 @@ class MessageManager:
 
 
 
-    def send_toSpeech(self, message, bot,lang):
-        if message.reply_to_message==None or message.reply_to_message.text==None:
-            tryTosendMsg(message,"Please include a reply voice reply!",bot)
 
-        else:
-            try:
-                # Language in which you want to convert
-                lang=lang.strip()
-                language = lang[0:2]
-                stringid= message.reply_to_message.message_id
-                string_mp=str(stringid)+ ".ogg"
-                # Passing the text and language to the engine,
-                # here we have marked slow=False. Which tells
-                # the module that the converted audio should
-                # have a high speed
-                myobj = gTTS(text=message.reply_to_message.text, lang=language, slow=False)
-                # string_ogg = str(stringid)+".ogg"
-                # Saving the converted audio in a mp3 file named
-                # welcome
-                myobj.save(string_mp)
-                # file_mp = AudioSegment.from_mp3(string_mp)
-                # file_handle = file_mp.export(string_ogg, format="ogg")
-                # sendVoice
-                voice = open(string_mp, 'rb')
-                bot.send_voice(message.chat.id, voice)
-                if os.path.exists(string_mp):
-                    os.remove(string_mp)
-
-            except:
-                bot.send_message(message.chat.id, "Problem in convertion, probably problem with language you insert!")
 
     def getIsAdmin(self,bot,message):
         isAdmin = False
