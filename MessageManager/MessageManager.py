@@ -20,7 +20,7 @@ from  Modules.UsefulMethods import tryTosendMsg,checkIfBotMentioned
 class MessageManager:
     userstep = []
     lydia = LydiaAI("e09b813a47da0dd46c3710bd9b8b9c4314c90727748d64ec97094a16c2db65d4012cb947a9057ba89a414d1dfc62e8c1b78f343ed87a4f5a33268de12f31153c")
-    # session = lydia.create_session("en")
+    session = lydia.create_session("en")
     userData = [None, None, None]
     databaseOp = DatabaseOperation()
     databaseInitiaization = DatabaseInitiaization.getInstance()
@@ -355,6 +355,23 @@ class MessageManager:
                     time.sleep(3)
         except Exception:
             pass
+    def send_studMessage(self, message, bot):
+        try:
+            sent = bot.reply_to(message, "Damn stud be simping!!")
+            time.sleep(3)
+            xarray = ["❤", "💛", "💚", "💜"]
+            i = 0
+            for x in range(0, 15):
+                if (i == 4):
+                    i = 0
+
+                else:
+                    bot.edit_message_text(xarray[i], message.chat.id, sent.message_id)
+                    i = i + 1
+                    time.sleep(3)
+        except Exception:
+            pass
+
     def send_toText(self, message, bot):
 
         if message.reply_to_message==None or message.reply_to_message.voice==None:

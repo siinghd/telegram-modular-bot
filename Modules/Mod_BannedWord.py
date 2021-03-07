@@ -1,6 +1,6 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.BannedWords import BannedWords
-from Modules.UsefulMethods import PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN,toText
+from Modules.UsefulMethods import PRIVATECHAT,tryTosendMsg,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN,toText
 import speech_recognition as sr
 class Mod_BannedWord(Mod_Base):
     r = sr.Recognizer()
@@ -64,8 +64,8 @@ class Mod_BannedWord(Mod_Base):
             else:
                 tryTosendMsg(message,PRIVATECHAT,self.bot)
 
-        except Exception:
-            print(Exception)
+        except Exception as e:
+            print(e)
 
     def ban_word(self, message, word):
         bannedword=BannedWords(message.id,message.chat.id,word,None)
