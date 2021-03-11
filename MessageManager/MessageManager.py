@@ -330,7 +330,10 @@ class MessageManager:
 
     def checkIfBotMentioned(self, message, bot):
         found = checkIfBotMentioned(message)
+
         if found==True:
+            if not self.session.available:
+                self.session = self.lydia.create_session()
             query = message.text.replace("@szBrokenBot","")
             try:
                 output = self.session.think_thought(query)

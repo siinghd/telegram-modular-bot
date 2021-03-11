@@ -3,6 +3,7 @@ from Weather.weatherInfo import WeatherInfo
 from MessageManager.MessageManager import MessageManager
 import ModuleCommandChecker
 from Bot import Bot
+import time
 def startMain():
     weatherInfo = WeatherInfo()
     messageManager = MessageManager()
@@ -118,6 +119,7 @@ def startMain():
             messageManager.send_discussion_cheerful(message,bot)
         elif "stud simping" in  message.text.lower():
             messageManager.send_studMessage(message,bot)
+
         messageManager.storeUserToDatabse(message,bot)
         messageManager.checkUserIfHasStatus(message,bot)
         messageManager.checkIfBotMentioned(message,bot)
