@@ -81,12 +81,13 @@ def toText(bot,fileId,r):
             r.adjust_for_ambient_noise(source, duration=0.5)
             audio = r.record(source)
 
-            res = r.recognize_google(audio ,language="en-IN",show_all=True)
+            res = r.recognize_google(audio,show_all=True)
 
         if len(res) == 0:
             info["status"] = "failed"
             info["message"] = "Check the audio, probably no clear speech found!"
         else:
+
             stringTosend = "<b>Here is possible text:</b>\n"
             stringTosend = stringTosend + f"""⚫ {res['alternative'][0]['transcript']}\n"""
             info["status"] = "success"
