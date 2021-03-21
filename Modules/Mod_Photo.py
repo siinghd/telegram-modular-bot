@@ -11,7 +11,7 @@ from Modules.UsefulMethods import WORNGMSG, tryTosendMsg
 class Mod_Photo(Mod_Base):
     user_step=[]
     def __init__(self):
-        super(Mod_Photo,self).__init__("Photo",["/upscaleimage","/colorbwphoto","/modifyphoto"],
+        super(Mod_Photo,self).__init__("Photo",["/upscaleimage","/colorbwphoto","/modifyphoto","/toimage"],
                                         [])
 
     def handleOnCommand(self,message,name):
