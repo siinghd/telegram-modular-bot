@@ -1,5 +1,5 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import WORNGMSG ,getBotIsAdmin,BOTNOTADMIN,tryTosendMsg
+from Modules.UsefulMethods import WORNGMSG ,NOTADMIN,getBotIsAdmin,BOTNOTADMIN,tryTosendMsg,isOwner,getIsAdmin
 import requests
 import json
 class Mod_NSFW(Mod_Base):
@@ -12,30 +12,32 @@ class Mod_NSFW(Mod_Base):
     def handleOnCommand(self,message,name):
         try:
             if getBotIsAdmin(self.bot, message):
-                if name == "/enable_nsfw_detection":
-                    resp = self.insert_nsfw_status(message.chat.id)
-                    if resp =="ok":
-                        tryTosendMsg(message,"NSFW detection enabled",self.bot)
-
-                    else:
-                        tryTosendMsg(message,resp,self.bot)
-
-                if name =="/disable_nsfw_detection":
-                    resp = self.delete_nsfw_status(message.chat.id)
-                    tryTosendMsg(message,resp,self.bot)
-
-                if name=="/show_nsfw_detection_status":
-                    resp = self.get_NsfwStatus(message.chat.id)
-                    if isinstance(resp,str):
-                        tryTosendMsg(message,WORNGMSG,self.bot)
-
-                    else:
-                        if len(resp)>0:
+                if isOwner(message) or getIsAdmin(self.bot,message):
+                    if name == "/enable_nsfw_detection":
+                        resp = self.insert_nsfw_status(message.chat.id)
+                        if resp =="ok":
                             tryTosendMsg(message,"NSFW detection enabled",self.bot)
 
                         else:
-                            tryTosendMsg(message, "NSFW detection disbaled",self.bot)
+                            tryTosendMsg(message,resp,self.bot)
 
+                    if name =="/disable_nsfw_detection":
+                        resp = self.delete_nsfw_status(message.chat.id)
+                        tryTosendMsg(message,resp,self.bot)
+
+                    if name=="/show_nsfw_detection_status":
+                        resp = self.get_NsfwStatus(message.chat.id)
+                        if isinstance(resp,str):
+                            tryTosendMsg(message,WORNGMSG,self.bot)
+
+                        else:
+                            if len(resp)>0:
+                                tryTosendMsg(message,"NSFW detection enabled",self.bot)
+
+                            else:
+                                tryTosendMsg(message, "NSFW detection disbaled",self.bot)
+                else:
+                    tryTosendMsg(message, NOTADMIN, self.bot)
             else:
                 tryTosendMsg(message,BOTNOTADMIN,self.bot)
 

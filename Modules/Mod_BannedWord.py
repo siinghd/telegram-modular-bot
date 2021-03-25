@@ -1,6 +1,6 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.BannedWords import BannedWords
-from Modules.UsefulMethods import PRIVATECHAT,tryTosendMsg,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN,toText
+from Modules.UsefulMethods import PRIVATECHAT,isOwner,tryTosendMsg,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN,toText
 import speech_recognition as sr
 class Mod_BannedWord(Mod_Base):
     r = sr.Recognizer()
@@ -10,9 +10,9 @@ class Mod_BannedWord(Mod_Base):
     def handleOnCommand(self,message,name):
         try:
             if not isPrivateChat(message):
-                if getBotIsAdmin(self.bot,message):
+                if  getBotIsAdmin(self.bot,message):
                     if name=="/bword":
-                        if getIsAdmin(self.bot,message):
+                        if isOwner(message) or getIsAdmin(self.bot,message):
                             word = message.text
                             if "/bword@szBrokenBot" in word:
                                 word = word[word.index("/bword@szBrokenBot") + len("/bword@szBrokenBot"):]
@@ -43,7 +43,7 @@ class Mod_BannedWord(Mod_Base):
                                 tryTosendMsg(message,"This group has no banned words",self.bot)
 
                     elif name == "/dbword" :
-                        if getIsAdmin(self.bot,message):
+                        if isOwner(message) or getIsAdmin(self.bot,message):
                             word = message.text
                             if "/dbword@szBrokenBot" in word:
                                 word = word[word.index("/dbword@szBrokenBot") + len("/dbword@szBrokenBot"):]

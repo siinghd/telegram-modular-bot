@@ -1,7 +1,7 @@
 from Modules.Base import Mod_Base
 from DatabaseManager.MutedUser import MutedUser
 from DatabaseManager.DatabaseOperation import DatabaseOperation
-from Modules.UsefulMethods import getUserIdArray,tryTosendMsg ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN
+from Modules.UsefulMethods import getUserIdArray,tryTosendMsg ,PRIVATECHAT,getIsAdmin,BOTNOTADMIN ,getBotIsAdmin,isPrivateChat,NOTADMIN ,isOwner
 class Mod_MutedUser(Mod_Base):
     dbop = DatabaseOperation()
 
@@ -13,7 +13,7 @@ class Mod_MutedUser(Mod_Base):
             if not isPrivateChat(message):
                 if name == "/fmute":
                         if getBotIsAdmin(self.bot,message):
-                            if getIsAdmin(self.bot,message):
+                            if isOwner(message) or getIsAdmin(self.bot,message):
 
                                 reason = message.text
                                 if "/fmute@szBrokenBot" in reason:
@@ -35,7 +35,7 @@ class Mod_MutedUser(Mod_Base):
 
                 elif name =="/funmute":
                     if getBotIsAdmin(self.bot,message):
-                        if getIsAdmin(self.bot, message):
+                        if isOwner(message) or getIsAdmin(self.bot, message):
                             userIds = getUserIdArray(message, self.dbop.getUserByUsername, self.cursor)
                             for id in userIds:
                                 mutedUser = MutedUser(userIds[id], None, None,message.chat.id)
