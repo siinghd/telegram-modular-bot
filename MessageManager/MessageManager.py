@@ -19,8 +19,8 @@ from Modules import UsefulMethods
 from  Modules.UsefulMethods import tryTosendMsg,checkIfBotMentioned
 class MessageManager:
     userstep = []
-    lydia = LydiaAI("61ab1dfeded37ba9a3ebc4898a3d2e0f3c620387a7de4eb097bd8c03ce52266d6badafc708c1394b58301003b912d230eb5ccef2f5701cb3940fa9d683e300e0")
-    session = lydia.create_session("en")
+    #lydia = LydiaAI("61ab1dfeded37ba9a3ebc4898a3d2e0f3c620387a7de4eb097bd8c03ce52266d6badafc708c1394b58301003b912d230eb5ccef2f5701cb3940fa9d683e300e0")
+    #session = lydia.create_session("en")
     userData = [None, None, None]
     databaseOp = DatabaseOperation()
     databaseInitiaization = DatabaseInitiaization.getInstance()
