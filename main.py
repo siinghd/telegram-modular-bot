@@ -122,7 +122,7 @@ def startMain():
 
         messageManager.storeUserToDatabse(message,bot)
         messageManager.checkUserIfHasStatus(message,bot)
-        messageManager.checkIfBotMentioned(message,bot)
+        #messageManager.checkIfBotMentioned(message,bot)
         ModuleCommandChecker.checkCommand(message)
 
 
