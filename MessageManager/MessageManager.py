@@ -357,7 +357,7 @@ class MessageManager:
                     time.sleep(3)
         except Exception:
             pass
-    def send_claraMessage(message, bot):
+    def send_claraMessage(self,message, bot):
         try:
             sent = bot.reply_to(message, "Damn girl")
             time.sleep(3)
