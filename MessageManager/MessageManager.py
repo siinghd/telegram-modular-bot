@@ -357,9 +357,9 @@ class MessageManager:
                     time.sleep(3)
         except Exception:
             pass
-    def send_studMessage(self, message, bot):
+    def send_claraMessage(message, bot):
         try:
-            sent = bot.reply_to(message, "Damn stud be simping!!")
+            sent = bot.reply_to(message, "Damn girl")
             time.sleep(3)
             xarray = ["❤", "💛", "💚", "💜"]
             i = 0

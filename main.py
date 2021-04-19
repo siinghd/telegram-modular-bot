@@ -119,6 +119,8 @@ def startMain():
             messageManager.send_discussion_cheerful(message,bot)
         elif "stud simping" in  message.text.lower():
             messageManager.send_studMessage(message,bot)
+        elif "clara pussy" in  message.text.lower():
+            messageManager.send_claraMessage(message,bot)
 
         messageManager.storeUserToDatabse(message,bot)
         messageManager.checkUserIfHasStatus(message,bot)
