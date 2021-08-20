@@ -117,8 +117,8 @@ def startMain():
     def messageHandler(message):
         if "_discuss" in message.text.lower():
             messageManager.send_discussion_cheerful(message,bot)
-        elif "stud simping" in  message.text.lower():
-            messageManager.send_studMessage(message,bot)
+        elif "pablito baby" in  message.text.lower():
+            messageManager.send_pabloMessage(message,bot)
         elif "clara pussy" in  message.text.lower():
             messageManager.send_claraMessage(message,bot)
 

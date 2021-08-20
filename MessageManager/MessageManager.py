@@ -341,10 +341,10 @@ class MessageManager:
                 print(e)
                 pass
 
-    def send_studMessage(self, message, bot):
+    def send_pabloMessage(self, message, bot):
         try:
-            sent = bot.reply_to(message, "Damn stud be simping!!")
-            time.sleep(3)
+            sent = bot.reply_to(message, "Ah amore pablo!!")
+            time.sleep(10)
             xarray = ["❤", "💛", "💚", "💜"]
             i = 0
             for x in range(0, 15):
