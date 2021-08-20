@@ -343,6 +343,8 @@ class MessageManager:
 
     def send_pabloMessage(self, message, bot):
         try:
+            sent = bot.reply_to(message, "Ah amore pablo!!")
+            time.sleep(4)
             xarray = ["❤", "💛", "💚", "💜"]
             i = 0
             for x in range(0, 15):
