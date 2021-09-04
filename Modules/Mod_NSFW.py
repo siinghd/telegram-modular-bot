@@ -1,12 +1,13 @@
 from Modules.Base import Mod_Base
-from Modules.UsefulMethods import WORNGMSG ,NOTADMIN,getBotIsAdmin,BOTNOTADMIN,tryTosendMsg,isOwner,getIsAdmin
+from Modules.UsefulMethods import WORNGMSG ,getmessageInCommand,NOTADMIN,getBotIsAdmin,BOTNOTADMIN,tryTosendMsg,isOwner,getIsAdmin
 import requests
 import json
 class Mod_NSFW(Mod_Base):
     user_step=[]
     def __init__(self):
         super(Mod_NSFW,self).__init__("NSFW",["/enable_nsfw_detection","/disable_nsfw_detection",
-                                              "/show_nsfw_detection_status"],
+                                              "/show_nsfw_detection_status",
+                                              "/nsfw_image"],
                                         [])
 
     def handleOnCommand(self,message,name):
@@ -40,6 +41,15 @@ class Mod_NSFW(Mod_Base):
                     tryTosendMsg(message, NOTADMIN, self.bot)
             else:
                 tryTosendMsg(message,BOTNOTADMIN,self.bot)
+            
+            if name == "/nsfw_image":
+                textMessageParams = getmessageInCommand(message,"/nsfw_image"," ")
+                if len(textMessageParams) > 0:
+                    self.getNsfwImage(message,textMessageParams)
+                else:
+                    tryTosendMsg(message,"Please include type of nsfw image", self.bot)
+            
+
 
 
 
@@ -124,9 +134,28 @@ class Mod_NSFW(Mod_Base):
                  return "NSFW detection disabled!"
         except Exception:
             return WORNGMSG
+    
+    def getNsfwImage(self,msg,params):
+        try:
+            r = requests.get(
+                f"https://nekobot.xyz/api/image?type={params[0]}",
+            )
+            response = r.text
+            dictionary = json.loads(response)
+            print(dictionary)
+            if dictionary['success']:
+                tryTosendMsg(msg,dictionary['message'],self.bot)
+            else:
+                tryTosendMsg(msg, WORNGMSG, self.bot)
+        except Exception as e:
+            print(e)
+            tryTosendMsg(msg,"Something went wrong retry!", self.bot)
+    
     def help_mod(self):
         help_string =f"Help of {self.mod_name}\n"+\
               f"/enable_nsfw_detection - enable nsfw detection\n"+\
               f"/disable_nsfw_detection - disbale nsfw detection\n"+\
-              f"/show_nsfw_detection_status - get if your server nsfw status"
+              f"/show_nsfw_detection_status - get if your server nsfw status"+\
+              f"/nsfw_image image type - get nsfw image"
         return help_string
+    
