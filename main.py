@@ -119,7 +119,7 @@ def startMain():
             messageManager.send_discussion_cheerful(message,bot)
         elif "pablito baby" in  message.text.lower():
             messageManager.send_pabloMessage(message,bot)
-        elif "clara pussy" in  message.text.lower():
+        elif "asapbop pussy" in  message.text.lower():
             messageManager.send_claraMessage(message,bot)
 
         messageManager.storeUserToDatabse(message,bot)
