@@ -272,7 +272,7 @@ class Mod_Photo(Mod_Base):
                 r = requests.post(
                     urlService,
                     data={},
-                    headers={'Authorization': 'yMHw4UidZM1Hha82AZtMjI50bYCfC3sdX7vvB'},files={'image': photo}
+                    headers={'Authorization': '2oay998GQWDsw5YuAwBlC1R8tFVnlelZuMoPx3AAw36MC'},files={'image': photo}
                 )
 
             open(restore_savedImage, 'wb').write(r.content)
