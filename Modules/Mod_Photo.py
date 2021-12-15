@@ -108,21 +108,21 @@ class Mod_Photo(Mod_Base):
                 if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
                     tryTosendMsg(message, "Message sent isn't a photo , cancelling photo restoration command!", self.bot)
                 else:
-                    self.send_photo_message_hotpot(message,'image',"https://cortex.hotpot.ai/restoration-api-bin",self.getImageUrl(message))
+                    self.send_photo_message_hotpot(message,'restore',"https://cortex.hotpot.ai/restoration-api-bin",self.getImageUrl(message))
             else:
                 if message.content_type == 'text':
                     ModuleCommandChecker.checkCommand(message)
                 self.bot.register_next_step_handler_by_chat_id(message.chat.id,self.send_modified_photo)
         except Exception as e:
             print(e)
-    def send_restore_image(self,message):
+    def send_bremove_image(self,message):
         try:
             if message.from_user.id in self.user_step:
                 self.user_step.remove(message.from_user.id)
                 if (message.reply_to_message is not None and message.reply_to_message.content_type != 'photo') and message.content_type != 'photo':
-                    tryTosendMsg(message, "Message sent isn't a photo , cancelling photo restoration command!", self.bot)
+                    tryTosendMsg(message, "Message sent isn't a photo , cancelling photo background remove command!", self.bot)
                 else:
-                    self.send_photo_message_hotpot(message,'image',"https://cortex.hotpot.ai/restoration-api-bin",self.getImageUrl(message))
+                    self.send_photo_message_hotpot(message,'bremove',"https://api.hotpot.ai/remove-background",self.getImageUrl(message))
             else:
                 if message.content_type == 'text':
                     ModuleCommandChecker.checkCommand(message)
@@ -253,57 +253,39 @@ class Mod_Photo(Mod_Base):
         savedImage = 'imgrestore.jpg'
         restore_savedImage = 'restoredimage.png'
         try:
-            r = requests.get(url, allow_redirects=True)
-            open(savedImage, 'wb').write(r.content)
-            photo = open(savedImage, 'rb')
-            r = requests.post(
-                urlService,
-                data={
-                    'requestId':'H2JeH',
-                    'withScratch': True
-                },
-                headers={'Authorization': 'yMHw4UidZM1Hha82AZtMjI50bYCfC3sdX7vvB'},files={'image': photo}
-            )
-            open(savedImage, 'wb').write(r.content)
-            restored_photo = open(savedImage, 'rb')
-            self.bot.send_photo(message.chat.id, restored_photo, "Here is your photo!", message.id)
+            if type == 'restore':
+                r = requests.get(url, allow_redirects=True)
+                open(savedImage, 'wb').write(r.content)
+                photo = open(savedImage, 'rb')
+                r = requests.post(
+                    urlService,
+                    data={
+                        'requestId':'H2JeH',
+                        'withScratch': True
+                    },
+                    headers={'Authorization': 'yMHw4UidZM1Hha82AZtMjI50bYCfC3sdX7vvB'},files={'image': photo}
+                )
+            elif type == 'bremove':
+                r = requests.get(url, allow_redirects=True)
+                open(savedImage, 'wb').write(r.content)
+                photo = open(savedImage, 'rb')
+                r = requests.post(
+                    urlService,
+                    data={},
+                    headers={'Authorization': 'yMHw4UidZM1Hha82AZtMjI50bYCfC3sdX7vvB'},files={'image': photo}
+                )
+
+            open(restore_savedImage, 'wb').write(r.content)
+            restored_photo = open(restore_savedImage, 'rb')
+            if r.status_code == 200:
+                self.bot.send_photo(message.chat.id, restored_photo, "Here is your photo!", message.id)
+            else:
+                tryTosendMsg(message,'Something went wrong, retry',self.bot)
             if os.path.exists(savedImage):
                 os.remove(savedImage)
             if os.path.exists(restore_savedImage):
                 os.remove(restore_savedImage)
-            # dictionary = json.loads(response)
-            # if 'err' in dictionary:
-            #     tryTosendMsg(message,  f"An error occurred processing photo", self.bot)
-            # else:
-            #     if 'output_url'in dictionary:
-            #         apiurl = dictionary['output_url']
-            #         saveImg = dictionary['id'] + ".jpg"
-            #         r = requests.get(apiurl, allow_redirects=True)
-            #         open(saveImg, 'wb').write(r.content)
-            #         photo = open(saveImg, 'rb')
-            #         self.bot.send_photo(message.chat.id, photo, "Here is your photo!", message.id)
-            #         photo.close()
-            #     # elif "output" in dictionary:
-            #     #     saveImg = dictionary['id'] + ".jpg"
-            #     #     r = requests.get(url, allow_redirects=True)
-            #     #     open(saveImg, 'wb').write(r.content)
-            #     #     if len(dictionary["output"][ "faces"])!=0:
-            #     #         photo = Image.open(saveImg)
-            #     #         data = asarray(photo).copy()
-            #     #         for face in dictionary["output"][ "faces"]:
-            #     #             print(face["bounding_box"][0])
-            #     #             left= face["bounding_box"][0]
-            #     #             top=face["bounding_box"][1]
-            #     #             right= face["bounding_box"][2]
-            #     #             bottom= face["bounding_box"][3]
-            #     #             label=f"""{face["cultural_appearance"]} , {face["gender"]} , {face["age_range"][0]}- {face["age_range"][1]}"""
-            #     #             bb.add(data,  left, top, right+200, bottom+200, label, "green")
-            #     #         image2 = Image.fromarray(data)
-            #     #         self.bot.send_photo(message.chat.id, image2, "Here is your photo!", message.id)
-            #     #     else:
-            #     #         tryTosendMsg(message,"No face found in this image",self.bot)
-            #     if os.path.exists(saveImg):
-            #         os.remove(saveImg)
+
         except Exception as e:
             print(e)
             tryTosendMsg(message, "Something went wrong, Retry later", self.bot)
