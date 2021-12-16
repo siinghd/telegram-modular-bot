@@ -292,7 +292,8 @@ class Mod_Photo(Mod_Base):
     def help_mod(self):
         help_string =f"Help of {self.mod_name}\n"+\
               f"/upscaleimage - upscale image without losing details\n"+\
-              f"/colorbwphoto - black and white photo to color\n"+\
-              f"/modifyphoto - modify photo to cartoony"
+              f"/colorbwphoto - black and white photo to color\n"+ \
+              f"/restore - restore old pic\n" + \
+              f"/bremove - remove background"
 
         return help_string

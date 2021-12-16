@@ -42,6 +42,8 @@ def getUserIdArray(message,method,cursor):
 
 def getIsAdmin(bot,message):
     isAdmin = False
+    if message.chat.type == 'private':
+        return True
     for member in bot.get_chat_administrators(message.chat.id):
         if member.user.id == message.from_user.id:
             isAdmin = True
@@ -53,6 +55,8 @@ def getBotIsAdmin(bot,message):
     botId= bot.get_me()
 
     botId=botId.id
+    if message.chat.type == 'private':
+        return True
     for member in bot.get_chat_administrators(message.chat.id):
         if member.user.id == botId:
             isAdmin = True

@@ -12,6 +12,7 @@ class Mod_NSFW(Mod_Base):
 
     def handleOnCommand(self,message,name):
         try:
+            print(message)
             if getBotIsAdmin(self.bot, message):
                 if isOwner(message) or getIsAdmin(self.bot,message):
                     if name == "/enable_nsfw_detection":
