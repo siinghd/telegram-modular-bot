@@ -16,7 +16,9 @@ def startMain():
                                    'totext','chatinfo'])
     def check_commands(message):
         if "/start" in message.text.lower():
-            bot.reply_to(message, "Welcome to szBrokenHeart")
+            bot.reply_to(message, "The chat id is:")
+            bot.reply_to(message, message.chat.id)
+            bot.reply_to(message, "Add this id in your snipe form to get updates here!")
         elif "/weather" in message.text.lower():
             city = message.text
             if "/weather@szBrokenBot" in city:

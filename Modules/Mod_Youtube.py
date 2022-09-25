@@ -16,7 +16,6 @@ class Mod_Youtube(Mod_Base):
             if name == "/tomp3":
                 textMessageParams = getmessageInCommand(message,"/tomp3",None)
                 if len(textMessageParams)>0 and "youtu" in textMessageParams:
-
                     tryTosendMsg(message, "Converting...", self.bot)
                     self.sendFileDownloaded(message,textMessageParams,"mp3")
                 else:
