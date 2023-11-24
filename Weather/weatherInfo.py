@@ -1,7 +1,7 @@
 from weatherapi.weatherapi_client import WeatherapiClient
 import json
 class WeatherInfo:
-    _APIKEY = "82c028184a9346b48f9142015202812"
+    _APIKEY = ""
 
     def __init__(self):
         self.client = WeatherapiClient(self._APIKEY)

@@ -19,8 +19,6 @@ from Modules import UsefulMethods
 from  Modules.UsefulMethods import tryTosendMsg,checkIfBotMentioned
 class MessageManager:
     userstep = []
-    #lydia = LydiaAI("61ab1dfeded37ba9a3ebc4898a3d2e0f3c620387a7de4eb097bd8c03ce52266d6badafc708c1394b58301003b912d230eb5ccef2f5701cb3940fa9d683e300e0")
-    #session = lydia.create_session("en")
     userData = [None, None, None]
     databaseOp = DatabaseOperation()
     databaseInitiaization = DatabaseInitiaization.getInstance()
@@ -340,39 +338,6 @@ class MessageManager:
             except Exception as e :
                 print(e)
                 pass
-
-    def send_pabloMessage(self, message, bot):
-        try:
-            sent = bot.reply_to(message, "Ah amore pablo!!")
-            time.sleep(4)
-            xarray = ["❤", "💛", "💚", "💜"]
-            i = 0
-            for x in range(0, 15):
-                if (i == 4):
-                    i = 0
-
-                else:
-                    bot.edit_message_text(xarray[i], message.chat.id, sent.message_id)
-                    i = i + 1
-                    time.sleep(3)
-        except Exception:
-            pass
-    def send_claraMessage(self,message, bot):
-        try:
-            sent = bot.reply_to(message, "Damn girl")
-            time.sleep(3)
-            xarray = ["❤", "💛", "💚", "💜"]
-            i = 0
-            for x in range(0, 15):
-                if (i == 4):
-                    i = 0
-
-                else:
-                    bot.edit_message_text(xarray[i], message.chat.id, sent.message_id)
-                    i = i + 1
-                    time.sleep(3)
-        except Exception:
-            pass
 
     def send_toText(self, message, bot):
 

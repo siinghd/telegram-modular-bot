@@ -94,7 +94,7 @@ class Mod_NSFW(Mod_Base):
                 data={
                     type: url,
                 },
-                headers={'api-key': '282bb452-77d1-4561-a7d2-d750058fffd6'}
+                headers={'api-key': ''}
             )
             response = r.text
             dictionary = json.loads(response)
